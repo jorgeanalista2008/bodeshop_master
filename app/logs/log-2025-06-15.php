@@ -1,0 +1,16 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+
+ERROR - 2025-06-15 00:15:46 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 01:37:59 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 02:45:23 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 02:45:24 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 03:00:50 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 03:00:51 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 06:22:20 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 08:03:03 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 08:06:29 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 10:47:15 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 11:05:23 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 16:21:50 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 21:20:00 --> Could not find the language line "subcategory"
+ERROR - 2025-06-15 21:45:06 --> Could not find the language line "subcategory"

@@ -1,0 +1,17 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+
+ERROR - 2026-02-13 05:13:19 --> Could not find the language line "subcategory"
+ERROR - 2026-02-13 05:14:41 --> Could not find the language line "subcategory"
+ERROR - 2026-02-13 05:19:42 --> Could not find the language line "subcategory"
+ERROR - 2026-02-13 05:20:21 --> Could not find the language line "subcategory"
+ERROR - 2026-02-13 05:21:22 --> Could not find the language line "subcategory"
+ERROR - 2026-02-13 05:21:55 --> Could not find the language line "subcategory"
+ERROR - 2026-02-13 06:21:19 --> Could not find the language line "we_are_sorry_as_this_sction_is_still_under_development."
+ERROR - 2026-02-13 08:28:18 --> Could not find the language line "subcategory"
+ERROR - 2026-02-13 15:53:42 --> Could not find the language line "subcategory"
+ERROR - 2026-02-13 18:53:49 --> Could not find the language line "subcategory"
+ERROR - 2026-02-13 18:55:11 --> Could not find the language line "sales_x_delivered"
+ERROR - 2026-02-13 18:55:20 --> Could not find the language line "sales_x_delivered"
+ERROR - 2026-02-13 18:55:28 --> Could not find the language line "sales_x_delivered"
+ERROR - 2026-02-13 18:55:28 --> Could not find the language line "variant"
+ERROR - 2026-02-13 18:56:09 --> Could not find the language line "print_dot"

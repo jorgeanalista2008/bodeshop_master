@@ -1,0 +1,82 @@
+/*================================================================================
+	Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
+	Version: 2.0
+	Author: PIXINVENT
+	Author URL: http://www.themeforest.net/user/pixinvent
+================================================================================
+
+NOTE:
+------
+PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
+WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
+#suggestions {
+    box-shadow: 2px 2px 8px 0 rgba(0,0,0,.2);
+    height: auto;
+    position: absolute;
+    top: 45px;
+    z-index: 9999;
+    width: 206px;
+}
+
+#suggestions .suggest-element {
+    background-color: #EEEEEE;
+    border-top: 1px solid #d6d4d4;
+    cursor: pointer;
+    padding: 8px;
+    width: 100%;
+    float: left;
+}
+#suggestions-marca {
+    box-shadow: 2px 2px 8px 0 rgba(0,0,0,.2);
+    height: auto;
+    position: absolute;
+    top: 10px;
+    z-index: 9999;
+    width: 206px;
+}
+
+#suggestions-marca .suggest-element-marca {
+    background-color: #EEEEEE;
+    border-top: 1px solid #d6d4d4;
+    cursor: pointer;
+    padding: 8px;
+    width: 100%;
+    float: left;
+}
+
+
+
+.table_anexos{
+    border-collapse: collapse;
+    font-size: 0.5rem;
+}
+
+.td_anexos {
+    border: 1px solid black;
+    padding: 5px;
+    text-align: center;
+    
+}
+.td_anexos_bancos {
+    border: 1px solid black;
+    padding: 5px;
+    text-align: left;
+    
+}
+.th_anexos {
+    border: 1px solid black;
+    padding: 5px;
+}
+.th_anexos_2 {
+    border: 1px solid black;
+    padding: 5px;
+    text-align: center;
+}
+
+
+.chartdiv_dashboard {
+    width: 100%;
+    max-height: 600px;
+    height: 100vh;
+    /*pointer-events:none;*/
+  }

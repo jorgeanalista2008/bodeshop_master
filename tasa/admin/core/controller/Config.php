@@ -1,0 +1,5 @@
+<?php
+define('NUM_ITEMS_BY_PAGE', 6);
+define('CORREDOR', 'NOMBRE DEL CORREDOR');
+define('NUMERO_CORREDOR', 'NUMERO DE CORREDOR');
+?>
