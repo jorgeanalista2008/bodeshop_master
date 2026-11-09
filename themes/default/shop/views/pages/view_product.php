@@ -4,273 +4,309 @@
         <div class="row">
             <div class="col-xs-12">
 
-                <div class="row">
-                    <div class="col-sm-9 col-md-10">
+<?php
+$in_stock = ($product->type != 'standard' || (!empty($warehouse) && $warehouse->quantity > 0) || $Settings->overselling);
+$is_promo = ($product->promotion && $product->promo_price > 0);
+$regular_price = (isset($product->special_price) && !empty($product->special_price)) ? $product->special_price : $product->price;
+$current_price = $is_promo ? $product->promo_price : $regular_price;
+$discount_pct = 0;
+if ($is_promo && $regular_price > 0 && $regular_price > $product->promo_price) {
+    $discount_pct = round((($regular_price - $product->promo_price) / $regular_price) * 100);
+}
+$clean_phone = preg_replace('/[^0-9]/', '', $shop_settings->phone ?? '');
+$wa_url = 'https://api.whatsapp.com/send?phone=' . $clean_phone . '&text=' . urlencode('Hola, me interesa comprar el producto: ' . $product->name . ' (Código: ' . $product->code . ') - ' . site_url('product/' . $product->slug));
+?>
 
-                        <div class="panel panel-default margin-top-lg">
-                            <div class="panel-heading text-bold">
-                                <i class="fa fa-list-alt margin-right-sm"></i> <?= $product->name . ' (' . $product->code . ')'; ?>
-                                <a href="<?= shop_url('products'); ?>" class="pull-right"><i class="fa fa-share"></i> <?= lang('products'); ?></a>
-                            </div>
-                            <div class="panel-body mprint">
+<!-- ================= MODERN PDP BREADCRUMB ================= -->
+<ol class="breadcrumb pdp-breadcrumb">
+    <li><a href="<?= site_url(); ?>"><i class="fa fa-home"></i> <?= lang('home'); ?></a></li>
+    <li><a href="<?= shop_url('products'); ?>"><?= lang('products'); ?></a></li>
+    <?php if ($category) { ?>
+        <li><a href="<?= site_url('category/' . $category->slug); ?>"><?= htmlspecialchars($category->name); ?></a></li>
+    <?php } ?>
+    <li class="active"><?= htmlspecialchars($product->name); ?></li>
+</ol>
 
-                                <div class="row">
-                                    <div class="col-sm-5">
-
-                                        <div class="photo-slider">
-                                            <div class="carousel slide article-slide" id="photo-carousel">
-
-                                                <div class="carousel-inner cont-slider">
-                                                    <div class="item active">
-                                                        <a href="#" data-toggle="modal" data-target="#lightbox">
-                                                            <img src="<?= base_url() ?>assets/uploads/<?= $product->image ?>" alt="<?= $product->name ?>" class="img-responsive img-thumbnail"/>
-                                                        </a>
-                                                    </div>
-                                                    <?php
-                                                    if (!empty($images)) {
-                                                        foreach ($images as $ph) {
-                                                            echo '<div class="item"><a href="#" data-toggle="modal" data-target="#lightbox"><img class="img-responsive img-thumbnail" src="' . base_url('assets/uploads/' . $ph->photo) . '" alt="' . $ph->photo . '" /></a></div>';
-                                                        }
-                                                    }
-                                                    ?>
-                                                </div>
-
-                                                <ol class="carousel-indicators">
-                                                    <li class="active" data-slide-to="0" data-target="#photo-carousel">
-                                                        <img class="img-thumbnail" alt="" src="<?= base_url() ?>assets/uploads/thumbs/<?= $product->image ?>">
-                                                    </li>
-                                                    <?php
-                                                    $r = 1;
-                                                    if (!empty($images)) {
-                                                        foreach ($images as $ph) {
-                                                            echo '<li class="" data-slide-to="' . $r . '" data-target="#photo-carousel"><img class="img-thumbnail" alt="" src="' . base_url('assets/uploads/thumbs/' . $ph->photo) . '"></li>';
-                                                            $r++;
-                                                        }
-                                                    }
-                                                    ?>
-
-                                                </ol>
-                                            </div>
-                                            <div class="clearfix"></div>
-                                        </div>
-
-                                        <?php if (!$shop_settings->hide_price) {
-                                                        ?>
-                                        <?php if (($product->type != 'standard' || $warehouse->quantity > 0) || $Settings->overselling) {
-                                                            ?>
-                                        <?= form_open('cart/add/' . $product->id, 'class="validate"'); ?>
-                                        <div class="form-group">
-                                            <?php
-                                            if ($variants) {
-                                                foreach ($variants as $variant) {
-                                                    $opts[$variant->id] = $variant->name . ($variant->price > 0 ? ' (+' . $this->sma->convertMoney($variant->price, true, false) . ')' : ($variant->price == 0 ? '' : ' (+' . $this->sma->convertMoney($variant->price, true, false) . ')'));
-                                                }
-                                                echo form_dropdown('option', $opts, '', 'class="form-control selectpicker mobile-device" required="required"');
-                                            } ?>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <div class="input-group">
-                                                <span class="input-group-addon pointer btn-minus"><span class="fa fa-minus"></span></span>
-                                                <input type="text" name="quantity" class="form-control text-center quantity-input" value="1" required="required">
-                                                <span class="input-group-addon pointer btn-plus"><span class="fa fa-plus"></span></span>
-                                            </div>
-                                        </div>
-                                        <!-- <input type="hidden" name="quantity" class="form-control text-center" value="1"> -->
-
-                                        <div class="form-group">
-                                            <div class="btn-group" role="group" aria-label="...">
-                                                <button class="btn btn-info btn-lg add-to-wishlist" data-id="<?= $product->id; ?>"><i class="fa fa-heart-o"></i></button>
-                                                <button type="submit" class="btn btn-theme btn-lg"><i class="fa fa-shopping-cart padding-right-md"></i> <?= lang('add_to_cart'); ?></button>
-                                            </div>
-                                        </div>
-                                        <?= form_close(); ?>
-                                        <?php
-                                                        } else {
-                                                            echo '<div class="well well-sm"><strong>' . lang('item_out_of_stock') . '</strong></div>';
-                                                        } ?>
-                                        <?php
-                                                    } ?>
-                                    </div>
-
-                                    <div class="col-sm-7">
-                                        <div class="clearfix"></div>
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-striped dfTable table-right-left">
-                                                <tbody>
-                                                    <tr>
-                                                        <td width="50%"><?= lang('name'); ?></td>
-                                                        <td width="50%"><?= $product->name; ?></td>
-                                                    </tr>
-                                                    <?php if (!empty($product->second_name)) {
-                                                        ?>
-                                                    <tr>
-                                                        <td width="50%"><?= lang('secondary_name'); ?></td>
-                                                        <td width="50%"><?= $product->second_name; ?></td>
-                                                    </tr>
-                                                    <?php
-                                                    } ?>
-                                                    <tr>
-                                                        <td><?= lang('code'); ?></td>
-                                                        <td><?= $product->code; ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><?= lang('type'); ?></td>
-                                                        <td><?= lang($product->type); ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><?= lang('brand'); ?></td>
-                                                        <td><?= $brand ? '<a href="' . site_url('brand/' . $brand->slug) . '" class="line-height-lg">' . $brand->name . '</a>' : ''; ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><?= lang('category'); ?></td>
-                                                        <td><?= '<a href="' . site_url('category/' . $category->slug) . '" class="line-height-lg">' . $category->name . '</a>'; ?></td>
-                                                    </tr>
-                                                    <?php if ($product->subcategory_id) {
-                                                        ?>
-                                                    <tr>
-                                                        <td><?= lang('subcategory'); ?></td>
-                                                        <td><?= '<a href="' . site_url('category/' . $category->slug . '/' . $subcategory->slug) . '" class="line-height-lg">' . $subcategory->name . '</a>'; ?></td>
-                                                    </tr>
-                                                    <?php
-                                                    } ?>
-
-                                                    <?php if (!$shop_settings->hide_price) {
-                                                        ?>
-                                                    <tr>
-                                                        <td><?= lang('price'); ?></td>
-                                                        <td><?= $this->sma->convertMoney(isset($product->special_price) ? $product->special_price : $product->price); ?></td>
-                                                    </tr>
-                                                    <?php
-                                                    } ?>
-
-                                                    <?php
-                                                    if ($product->promotion) {
-                                                        echo '<tr><td>' . lang('promotion') . '</td><td><strong>' . $this->sma->convertMoney($product->promo_price) . '</strong><br>' . ($product->start_date && $product->start_date != '0000-00-00' ? lang('start_date') . ': <strong>' . $this->sma->hrsd($product->start_date) . '</strong><br>' : '') . ($product->end_date && $product->end_date != '0000-00-00' ? lang('end_date') . ': <strong>' . $this->sma->hrsd($product->end_date) . '</strong>' : '') . '</td></tr>';
-                                                    }
-                                                    ?>
-
-                                                    <?php if ($product->tax_rate) {
-                                                        ?>
-                                                    <tr>
-                                                        <td><?= lang('tax_rate'); ?></td>
-                                                        <td><?= $tax_rate->name; ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><?= lang('tax_method'); ?></td>
-                                                        <td><?= $product->tax_method == 0 ? lang('inclusive') : lang('exclusive'); ?></td>
-                                                    </tr>
-                                                    <?php
-                                                    } ?>
-
-                                                    <tr>
-                                                        <td><?= lang('unit'); ?></td>
-                                                        <td><?= $unit ? $unit->name . ' (' . $unit->code . ')' : ''; ?></td>
-                                                    </tr>
-                                                    <?php if (!empty($warehouse) && $product->type == 'standard') {
-                                                        ?>
-                                                    <tr>
-                                                        <td><?= lang('in_stock'); ?></td>
-                                                        <td><?= $warehouse->quantity > 0 ? lang('yes') : lang('no'); ?></td>
-                                                        <!-- <td><?= $this->sma->formatQuantity($warehouse->quantity); ?></td> -->
-                                                    </tr>
-                                                    <?php
-                                                    } ?>
-
-                                                    <?php if ($variants) {
-                                                        ?>
-                                                    <tr>
-                                                        <td><?= lang('product_variants'); ?></td>
-                                                        <td><?php foreach ($variants as $variant) {
-                                                            echo '<span class="label label-primary">' . $variant->name . '</span> ';
-                                                        } ?></td>
-                                                    </tr>
-                                                    <?php
-                                                    } ?>
-
-                                                    <?php if (!empty($options)) {
-                                                        foreach ($options as $option) {
-                                                            if ($option->wh_qty != 0) {
-                                                                echo '<tr><td colspan="2" class="bg-primary">' . $option->name . '</td></tr>';
-                                                                // echo '<tr><td>' . lang('in_stock') . ': ' . $this->sma->formatQuantity($option->wh_qty) . '</td>';
-                                                                if (!$shop_settings->hide_price) {
-                                                                    echo '<tr><td>' . lang('in_stock') . ': ' . ($option->wh_qty ? lang('yes') : lang('no')) . '</td>';
-                                                                    echo '<td>' . lang('price') . ': ' . $this->sma->convertMoney((isset($product->special_price) ? $product->special_price : $product->price) + $option->price) . '</td>';
-                                                                    echo '</tr>';
-                                                                } else {
-                                                                    echo '<tr><td>' . lang('in_stock') . '</td><td>' . ($option->wh_qty ? lang('yes') : lang('no')) . '</td></tr>';
-                                                                }
-                                                            }
-                                                        }
-                                                    } ?>
-
-                                                    <?php if ($product->cf1 || $product->cf2 || $product->cf3 || $product->cf4 || $product->cf5 || $product->cf6) {
-                                                        if ($product->cf1) {
-                                                            echo '<tr><td>' . lang('pcf1') . '</td><td>' . $product->cf1 . '</td></tr>';
-                                                        }
-                                                        if ($product->cf2) {
-                                                            echo '<tr><td>' . lang('pcf2') . '</td><td>' . $product->cf2 . '</td></tr>';
-                                                        }
-                                                        if ($product->cf3) {
-                                                            echo '<tr><td>' . lang('pcf3') . '</td><td>' . $product->cf3 . '</td></tr>';
-                                                        }
-                                                        if ($product->cf4) {
-                                                            echo '<tr><td>' . lang('pcf4') . '</td><td>' . $product->cf4 . '</td></tr>';
-                                                        }
-                                                        if ($product->cf5) {
-                                                            echo '<tr><td>' . lang('pcf5') . '</td><td>' . $product->cf5 . '</td></tr>';
-                                                        }
-                                                        if ($product->cf6) {
-                                                            echo '<tr><td>' . lang('pcf6') . '</td><td>' . $product->cf6 . '</td></tr>';
-                                                        }
-                                                    } ?>
-
-
-                                                </tbody>
-                                            </table>
-                                            <?php if ($product->type == 'combo') {
-                                                        ?>
-                                            <strong><?= lang('combo_items') ?></strong>
-                                            <div class="table-responsive">
-                                                <table
-                                                class="table table-bordered table-striped table-condensed dfTable two-columns">
-                                                <thead>
-                                                    <tr>
-                                                        <th><?= lang('product_name') ?></th>
-                                                        <th><?= lang('quantity') ?></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php foreach ($combo_items as $combo_item) {
-                                                            echo '<tr><td>' . $combo_item->name . ' (' . $combo_item->code . ') </td><td>' . $this->sma->formatQuantity($combo_item->qty) . '</td></tr>';
-                                                        } ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <?php
-                                                    } ?>
-                                    </div>
-                                </div>
-                                <div class="clearfix"></div>
-
-                                <div class="col-xs-12">
-
-                                    <?= $product->details ? '<div class="panel panel-info"><div class="panel-heading">' . lang('product_details_for_invoice') . '</div><div class="panel-body">' . $product->details . '</div></div>' : ''; ?>
-                                    <?= $product->product_details ? '<div class="panel panel-default"><div class="panel-heading">' . lang('product_details') . '</div><div class="panel-body">' . $product->product_details . '</div></div>' : ''; ?>
-
-                                </div>
-                            </div>
-                            <!--  Jorge
-                            <?php include 'share.php'; ?>
-
-                            -->
+<!-- ================= MAIN PRODUCT CARD SHOWCASE ================= -->
+<div class="pdp-card">
+    <div class="row">
+        <!-- Columna Izquierda: Galería Multimedia -->
+        <div class="col-md-6 col-sm-12">
+            <div class="photo-slider pdp-gallery-wrap">
+                <div class="carousel slide article-slide" id="photo-carousel">
+                    <div class="carousel-inner cont-slider">
+                        <div class="item active">
+                            <a href="#" data-toggle="modal" data-target="#lightbox">
+                                <img src="<?= base_url('assets/uploads/' . $product->image); ?>" alt="<?= htmlspecialchars($product->name); ?>" class="img-responsive pdp-main-img"/>
+                            </a>
                         </div>
+                        <?php
+                        if (!empty($images)) {
+                            foreach ($images as $ph) {
+                                echo '<div class="item"><a href="#" data-toggle="modal" data-target="#lightbox"><img class="img-responsive pdp-main-img" src="' . base_url('assets/uploads/' . $ph->photo) . '" alt="' . htmlspecialchars($ph->photo) . '" /></a></div>';
+                            }
+                        }
+                        ?>
+                    </div>
+
+                    <?php if (!empty($images)) { ?>
+                    <ol class="carousel-indicators">
+                        <li class="active" data-slide-to="0" data-target="#photo-carousel">
+                            <img class="img-thumbnail" alt="" src="<?= base_url('assets/uploads/thumbs/' . $product->image); ?>">
+                        </li>
+                        <?php
+                        $r = 1;
+                        foreach ($images as $ph) {
+                            echo '<li class="" data-slide-to="' . $r . '" data-target="#photo-carousel"><img class="img-thumbnail" alt="" src="' . base_url('assets/uploads/thumbs/' . $ph->photo) . '"></li>';
+                            $r++;
+                        }
+                        ?>
+                    </ol>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Modern Buy Box -->
+        <div class="col-md-6 col-sm-12">
+            <div class="pdp-buybox">
+                <!-- Meta tags top -->
+                <div class="pdp-meta-top">
+                    <?php if ($category) { ?>
+                        <a href="<?= site_url('category/' . $category->slug); ?>" class="pdp-badge-cat">
+                            <i class="fa fa-folder-open-o"></i> <?= htmlspecialchars($category->name); ?>
+                        </a>
+                    <?php } ?>
+                    <?php if ($brand) { ?>
+                        <a href="<?= site_url('brand/' . $brand->slug); ?>" class="pdp-badge-brand">
+                            <i class="fa fa-tag"></i> <?= htmlspecialchars($brand->name); ?>
+                        </a>
+                    <?php } ?>
+                    <span class="pdp-badge-sku">
+                        <i class="fa fa-barcode"></i> Ref: <?= htmlspecialchars($product->code); ?>
+                    </span>
+                </div>
+
+                <!-- Título del producto -->
+                <h1 class="pdp-title"><?= htmlspecialchars($product->name); ?></h1>
+
+                <?php if (!empty($product->second_name)) { ?>
+                    <div class="pdp-subtitle">
+                        <?= htmlspecialchars($product->second_name); ?>
+                    </div>
+                <?php } ?>
+
+                <!-- Caja de Precio -->
+                <?php if (!$shop_settings->hide_price) { ?>
+                <div class="pdp-price-box">
+                    <span class="pdp-current-price">
+                        <?= $this->sma->convertMoney($current_price); ?>
+                    </span>
+                    <?php if ($is_promo) { ?>
+                        <span class="pdp-old-price">
+                            <?= $this->sma->convertMoney($regular_price); ?>
+                        </span>
+                        <?php if ($discount_pct > 0) { ?>
+                            <span class="pdp-discount-pill">
+                                -<?= $discount_pct; ?>% OFF
+                            </span>
+                        <?php } ?>
+                    <?php } ?>
+                </div>
+                <?php } ?>
+
+                <!-- Estado del Stock -->
+                <div>
+                    <?php if ($in_stock) { ?>
+                        <span class="pdp-stock-status in-stock">
+                            <i class="fa fa-check-circle"></i> En Stock &bull; Envío y retiro inmediato
+                        </span>
+                    <?php } else { ?>
+                        <span class="pdp-stock-status out-of-stock">
+                            <i class="fa fa-times-circle"></i> Agotado actualmente
+                        </span>
+                    <?php } ?>
+                </div>
+
+                <!-- Formulario de Compra -->
+                <?php if (!$shop_settings->hide_price) { ?>
+                    <?php if ($in_stock) { ?>
+                        <?= form_open('cart/add/' . $product->id, 'class="validate" style="margin-top: 10px;"'); ?>
+                        
+                        <!-- Variantes si existen -->
+                        <?php if ($variants) { ?>
+                            <div class="form-group">
+                                <label class="pdp-variant-label">Seleccionar Opción / Medida:</label>
+                                <?php
+                                foreach ($variants as $variant) {
+                                    $opts[$variant->id] = $variant->name . ($variant->price > 0 ? ' (+' . $this->sma->convertMoney($variant->price, true, false) . ')' : ($variant->price == 0 ? '' : ' (+' . $this->sma->convertMoney($variant->price, true, false) . ')'));
+                                }
+                                echo form_dropdown('option', $opts, '', 'class="form-control selectpicker mobile-device" required="required" style="height: 42px; border-radius: 8px;"');
+                                ?>
+                            </div>
+                        <?php } ?>
+
+                        <!-- Control de Cantidad y Botón de Carrito -->
+                        <div class="form-group pdp-actions-row">
+                            <div class="input-group">
+                                <span class="input-group-addon pointer btn-minus"><i class="fa fa-minus"></i></span>
+                                <input type="text" name="quantity" class="form-control text-center quantity-input" value="1" required="required">
+                                <span class="input-group-addon pointer btn-plus"><i class="fa fa-plus"></i></span>
+                            </div>
+
+                            <button type="submit" class="btn btn-pdp-cart">
+                                <i class="fa fa-shopping-cart"></i> <?= lang('add_to_cart'); ?>
+                            </button>
+
+                            <button type="button" class="btn add-to-wishlist" data-id="<?= $product->id; ?>" title="<?= lang('add_to_wishlist'); ?>">
+                                <i class="fa fa-heart-o"></i>
+                            </button>
+                        </div>
+                        <?= form_close(); ?>
+
+                        <!-- Botón Directo WhatsApp -->
+                        <?php if (!empty($clean_phone)) { ?>
+                            <a href="<?= $wa_url; ?>" target="_blank" class="btn-pdp-wa">
+                                <i class="fa fa-whatsapp" style="font-size: 18px;"></i> Comprar o Consultar por WhatsApp
+                            </a>
+                        <?php } ?>
+
+                    <?php } else { ?>
+                        <div class="alert alert-warning" style="border-radius: 10px; margin-top: 10px;">
+                            <i class="fa fa-exclamation-triangle"></i> <?= lang('item_out_of_stock'); ?>
+                        </div>
+                    <?php } ?>
+                <?php } ?>
+
+                <!-- Franja de Confianza en el Buy Box -->
+                <div class="pdp-features-strip">
+                    <div class="pdp-feature-item">
+                        <i class="fa fa-shield"></i>
+                        <span>Embalaje protegido</span>
+                    </div>
+                    <div class="pdp-feature-item">
+                        <i class="fa fa-truck"></i>
+                        <span>Envíos asegurados</span>
+                    </div>
+                    <div class="pdp-feature-item">
+                        <i class="fa fa-credit-card"></i>
+                        <span>Pagos verificados</span>
                     </div>
                 </div>
 
-                <div class="col-sm-3 col-md-2">
-                    <?php include 'sidebar2.php'; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= TABS DE INFORMACIÓN DEL PRODUCTO ================= -->
+<div class="pdp-tabs-wrap" style="margin-bottom: 40px;">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a href="#tab-desc" aria-controls="tab-desc" role="tab" data-toggle="tab">
+                <i class="fa fa-file-text-o"></i> <?= lang('product_details'); ?>
+            </a>
+        </li>
+        <li role="presentation">
+            <a href="#tab-specs" aria-controls="tab-specs" role="tab" data-toggle="tab">
+                <i class="fa fa-list"></i> Ficha Técnica
+            </a>
+        </li>
+        <li role="presentation">
+            <a href="#tab-shipping" aria-controls="tab-shipping" role="tab" data-toggle="tab">
+                <i class="fa fa-truck"></i> Envío y Garantía
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 16px;">
+        <!-- Tab 1: Descripción -->
+        <div role="tabpanel" class="tab-pane active" id="tab-desc">
+            <div class="pdp-tab-card">
+                <?php if (!empty($product->product_details) || !empty($product->details)) { ?>
+                    <?= $product->product_details ?: $product->details; ?>
+                <?php } else { ?>
+                    <p class="text-muted">Este producto no cuenta con descripción adicional por el momento.</p>
+                <?php } ?>
+            </div>
+        </div>
+
+        <!-- Tab 2: Ficha Técnica -->
+        <div role="tabpanel" class="tab-pane" id="tab-specs">
+            <div class="pdp-tab-card" style="padding: 0; overflow: hidden;">
+                <table class="table table-striped table-bordered dfTable table-right-left" style="margin: 0; border: none;">
+                    <tbody>
+                        <tr>
+                            <td width="35%"><?= lang('name'); ?></td>
+                            <td><?= htmlspecialchars($product->name); ?></td>
+                        </tr>
+                        <tr>
+                            <td><?= lang('code'); ?></td>
+                            <td><?= htmlspecialchars($product->code); ?></td>
+                        </tr>
+                        <?php if ($brand) { ?>
+                        <tr>
+                            <td><?= lang('brand'); ?></td>
+                            <td><?= htmlspecialchars($brand->name); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <?php if ($category) { ?>
+                        <tr>
+                            <td><?= lang('category'); ?></td>
+                            <td><?= htmlspecialchars($category->name); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <?php if ($unit) { ?>
+                        <tr>
+                            <td><?= lang('unit'); ?></td>
+                            <td><?= htmlspecialchars($unit->name . ' (' . $unit->code . ')'); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <?php if ($product->cf1 || $product->cf2 || $product->cf3 || $product->cf4 || $product->cf5 || $product->cf6) {
+                            for ($cfi = 1; $cfi <= 6; $cfi++) {
+                                $cfKey = 'cf' . $cfi;
+                                if (!empty($product->$cfKey)) {
+                                    echo '<tr><td>' . lang('pcf' . $cfi) . '</td><td>' . htmlspecialchars($product->$cfKey) . '</td></tr>';
+                                }
+                            }
+                        } ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 3: Envíos y Garantía -->
+        <div role="tabpanel" class="tab-pane" id="tab-shipping">
+            <div class="pdp-tab-card">
+                <h4 class="pdp-policy-heading">Políticas de Embalaje y Despacho</h4>
+                <p>En <strong><?= htmlspecialchars($shop_settings->shop_name); ?></strong> cada pieza es tratada con el mayor cuidado. Contamos con protocolos especiales de embalaje con materiales amortiguadores para evitar cualquier tipo de daño o rotura durante el transporte.</p>
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-sm-4">
+                        <div class="pdp-policy-box">
+                            <i class="fa fa-shield text-primary" style="font-size: 28px; margin-bottom: 8px;"></i>
+                            <h5 style="font-weight: 700; margin: 0 0 4px 0;">Protección Total</h5>
+                            <small class="text-muted">Empaque de alta resistencia</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pdp-policy-box">
+                            <i class="fa fa-clock-o text-primary" style="font-size: 28px; margin-bottom: 8px;"></i>
+                            <h5 style="font-weight: 700; margin: 0 0 4px 0;">Despacho Oportuno</h5>
+                            <small class="text-muted">Procesamiento inmediato</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pdp-policy-box">
+                            <i class="fa fa-whatsapp text-success" style="font-size: 28px; margin-bottom: 8px;"></i>
+                            <h5 style="font-weight: 700; margin: 0 0 4px 0;">Seguimiento Directo</h5>
+                            <small class="text-muted">Confirmación por WhatsApp</small>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
             </div>
         </div>
     </div>

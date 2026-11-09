@@ -1022,11 +1022,14 @@ class Reports extends MY_Controller
         }
         $this->load->library('datatables');
         $this->datatables
-            ->select('login, ip_address, time')
+            ->select('user_logins.login, user_logins.ip_address, user_logins.time')
             ->from('user_logins')
-            ->where('customer_id', $id);
+            ->join('users', 'users.id=user_logins.user_id', 'left');
+        if ($id) {
+            $this->datatables->where('users.company_id', $id);
+        }
         if ($login_start_date) {
-            $this->datatables->where('time BETWEEN "' . $login_start_date . '" and "' . $login_end_date . '"');
+            $this->datatables->where('user_logins.time BETWEEN "' . $login_start_date . '" and "' . $login_end_date . '"');
         }
         echo $this->datatables->generate();
     }
@@ -2556,7 +2559,7 @@ class Reports extends MY_Controller
         }
         if ($pdf || $xls) {
             $this->db
-                ->select('login, ip_address, time')
+                ->select('user_logins.login, user_logins.ip_address, user_logins.time')
                 ->from('user_logins')
                 ->where('user_id', $id)
                 ->order_by('time desc');

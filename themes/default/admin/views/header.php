@@ -8,7 +8,7 @@
     <link rel="shortcut icon" href="<?= $assets ?>images/icon.png"/>
     <link href="<?= $assets ?>styles/theme.css" rel="stylesheet"/>
     <link href="<?= $assets ?>styles/style.css" rel="stylesheet"/>
-    <link href="<?= base_url('assets/custom/custom.css') ?>" rel="stylesheet"/>
+    <link href="<?= base_url('assets/custom/custom.css?v=' . $Settings->version . '.10') ?>" rel="stylesheet"/>
     <script type="text/javascript" src="<?= $assets ?>js/jquery-2.0.3.min.js"></script>
     <script type="text/javascript" src="<?= $assets ?>js/jquery-migrate-1.2.1.min.js"></script>
     <!--[if lt IE 9]>
@@ -105,7 +105,7 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav pull-right">
-                    <li class="dropdown hidden-xs"><a class="btn tip" title="<?= lang('dashboard') ?>" data-placement="bottom" href="<?= admin_url('welcome') ?>"><i class="fa fa-dashboard"></i></a></li>
+                    <li class="dropdown hidden-xs"><a class="btn tip" title="<?= lang('dashboard') ?>" data-placement="bottom" href="<?= admin_url('welcome') ?>"><i class="fa fa-tachometer"></i></a></li>
                     <?php if (SHOP) {
         ?>
                     <li class="dropdown hidden-xs"><a class="btn tip" title="<?= lang('shop') ?>" data-placement="bottom" href="<?= base_url() ?>"><i class="fa fa-shopping-cart"></i></a></li>
@@ -368,7 +368,7 @@
                     <ul class="nav main-menu">
                         <li class="mm_welcome">
                             <a href="<?= admin_url() ?>">
-                                <i class="fa fa-dashboard"></i>
+                                <i class="fa fa-tachometer"></i>
                                 <span class="text"> <?= lang('dashboard'); ?></span>
                             </a>
                         </li>
@@ -437,7 +437,7 @@
 
                             <li class="mm_sales <?= strtolower($this->router->fetch_method()) == 'sales' ? 'mm_pos' : '' ?>">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-heart"></i>
+                                    <i class="fa fa-shopping-cart"></i>
                                     <span class="text"> <?= lang('sales'); ?>
                                     </span> <span class="chevron closed"></span>
                                 </a>
@@ -487,7 +487,7 @@
 
                             <li class="mm_quotes">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-heart-o"></i>
+                                    <i class="fa fa-file-text-o"></i>
                                     <span class="text"> <?= lang('quotes'); ?> </span>
                                     <span class="chevron closed"></span>
                                 </a>
@@ -509,7 +509,7 @@
 
                             <li class="mm_purchases">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-truck"></i>
                                     <span class="text"> <?= lang('purchases'); ?>
                                     </span> <span class="chevron closed"></span>
                                 </a>
@@ -549,7 +549,7 @@
 
                             <li class="mm_transfers">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-exchange"></i>
                                     <span class="text"> <?= lang('transfers'); ?> </span>
                                     <span class="chevron closed"></span>
                                 </a>
@@ -574,7 +574,7 @@
 
                             <li class="mm_returns">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-random"></i>
+                                    <i class="fa fa-undo"></i>
                                     <span class="text"> <?= lang('returns'); ?> </span>
                                     <span class="chevron closed"></span>
                                 </a>
@@ -912,7 +912,7 @@
                                 ?>
                             <li class="mm_shop_settings mm_api_settings">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-shopping-cart"></i><span class="text"> <?= lang('front_end'); ?> </span>
+                                    <i class="fa fa-globe"></i><span class="text"> <?= lang('front_end'); ?> </span>
                                     <span class="chevron closed"></span>
                                 </a>
                                 <ul>
@@ -1037,7 +1037,7 @@
                                 ?>
                             <li class="mm_sales <?= strtolower($this->router->fetch_method()) == 'sales' ? 'mm_pos' : '' ?>">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-heart"></i>
+                                    <i class="fa fa-shopping-cart"></i>
                                     <span class="text"> <?= lang('sales'); ?>
                                     </span> <span class="chevron closed"></span>
                                 </a>
@@ -1092,7 +1092,7 @@
                                 ?>
                             <li class="mm_quotes">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-heart-o"></i>
+                                    <i class="fa fa-file-text-o"></i>
                                     <span class="text"> <?= lang('quotes'); ?> </span>
                                     <span class="chevron closed"></span>
                                 </a>
@@ -1120,7 +1120,7 @@
                                 ?>
                             <li class="mm_purchases">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-truck"></i>
                                     <span class="text"> <?= lang('purchases'); ?>
                                     </span> <span class="chevron closed"></span>
                                 </a>
@@ -1163,7 +1163,7 @@
                                 ?>
                             <li class="mm_transfers">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-exchange"></i>
                                     <span class="text"> <?= lang('transfers'); ?> </span>
                                     <span class="chevron closed"></span>
                                 </a>
@@ -1191,7 +1191,7 @@
                                 ?>
                             <li class="mm_returns">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-random"></i>
+                                    <i class="fa fa-undo"></i>
                                     <span class="text"> <?= lang('returns'); ?> </span>
                                     <span class="chevron closed"></span>
                                 </a>

@@ -1,4 +1,4 @@
-<div id="sticky-con">
+﻿<div id="sticky-con">
     <?php
     if ($side_featured) {
         ?>

@@ -92,7 +92,7 @@ class Site extends CI_Model
         return $cost;
     }
 
-    public function calculateDiscount($discount = null, $amount, $order = null)
+    public function calculateDiscount($discount = null, $amount = 0, $order = null)
     {
         if ($discount && ($order || $this->Settings->product_discount)) {
             $dpos = strpos($discount, '%');
@@ -105,7 +105,7 @@ class Site extends CI_Model
         return 0;
     }
 
-    public function calculateOrderTax($order_tax_id = null, $amount)
+    public function calculateOrderTax($order_tax_id = null, $amount = 0)
     {
         if ($this->Settings->tax2 != 0 && $order_tax_id) {
             if ($order_tax_details = $this->site->getTaxRateByID($order_tax_id)) {
@@ -118,7 +118,7 @@ class Site extends CI_Model
         return 0;
     }
 
-    public function calculateTax($product_details = null, $tax_details, $custom_value = null, $c_on = null)
+    public function calculateTax($product_details = null, $tax_details = null, $custom_value = null, $c_on = null)
     {
         $value      = $custom_value ? $custom_value : (($c_on == 'cost') ? $product_details->cost : $product_details->price);
         $tax_amount = 0;

@@ -71,6 +71,21 @@ class Promos_model extends CI_Model
         return false;
     }
 
+    public function getPromoSuggestions($term = '', $limit = 10)
+    {
+        $this->db->select('id, name as text')
+            ->like('name', $term, 'both')
+            ->limit($limit ? $limit : 10);
+        $q = $this->db->get('promos');
+        if ($q->num_rows() > 0) {
+            foreach (($q->result()) as $row) {
+                $data[] = $row;
+            }
+            return $data;
+        }
+        return [];
+    }
+
     public function updatePromo($id, $data = [])
     {
         $this->db->where('id', $id);

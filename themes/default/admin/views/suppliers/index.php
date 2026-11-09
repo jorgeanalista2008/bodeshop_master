@@ -19,7 +19,23 @@
                 nRow.className = "supplier_details_link";
                 return nRow;
             },
-            "aoColumns": [{
+            
+            "fnDrawCallback": function (oSettings) {
+                var total = oSettings.fnRecordsTotal();
+                $("#kpi_total_suppliers").text(total);
+                var rows = oSettings.aoData;
+                var phoneCount = 0, emailCount = 0, vatCount = 0;
+                for (var i = 0; i < rows.length; i++) {
+                    var d = rows[i]._aData;
+                    if (d[4] && d[4].trim() != "" && d[4].trim() != "-") phoneCount++;
+                    if (d[3] && d[3].trim() != "" && d[3].trim() != "-") emailCount++;
+                    if (d[7] && d[7].trim() != "" && d[7].trim() != "-") vatCount++;
+                }
+                $("#kpi_phone_suppliers").text(phoneCount);
+                $("#kpi_email_suppliers").text(emailCount);
+                $("#kpi_vat_suppliers").text(vatCount);
+            },
+    "aoColumns": [{
                 "bSortable": false,
                 "mRender": checkbox
             }, null, null, null, null, null, null, null, null, {"bSortable": false}]
@@ -81,7 +97,71 @@
         <div class="row">
             <div class="col-lg-12">
 
-                <p class="introtext"><?= lang('list_results'); ?></p>
+                
+                <!-- KPI METRIC CARDS -->
+                <div class="row" style="margin-bottom: 22px;">
+                    <div class="col-md-3 col-sm-6">
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 48px; height: 48px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">
+                                <i class="fa fa-truck"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Total Proveedores</div>
+                                <div style="font-size: 22px; font-weight: 800; color: #0f172a;" id="kpi_total_suppliers">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 48px; height: 48px; border-radius: 10px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Con Teléfono</div>
+                                <div style="font-size: 22px; font-weight: 800; color: #059669;" id="kpi_phone_suppliers">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 48px; height: 48px; border-radius: 10px; background: #eef2ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">
+                                <i class="fa fa-envelope"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Con Email</div>
+                                <div style="font-size: 22px; font-weight: 800; color: #4f46e5;" id="kpi_email_suppliers">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 48px; height: 48px; border-radius: 10px; background: #fdf2f8; color: #db2777; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">
+                                <i class="fa fa-file-text-o"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Con NIF / RIF</div>
+                                <div style="font-size: 22px; font-weight: 800; color: #db2777;" id="kpi_vat_suppliers">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTIONS BAR -->
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <span style="font-weight: 700; color: #0f172a; font-size: 15px;"><i class="fa fa-truck text-primary" style="margin-right: 6px;"></i> Directorio de Proveedores</span>
+                        <span class="text-muted" style="font-size: 13px; margin-left: 10px;">Gestione las cuentas por pagar, información fiscal y contactos de suministros</span>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="<?= admin_url('suppliers/import_csv'); ?>" data-toggle="modal" data-target="#myModal" class="btn btn-default" style="border-radius: 6px; font-weight: 600; padding: 8px 14px;">
+                            <i class="fa fa-file-excel-o text-success" style="margin-right: 5px;"></i> <?= lang('import_by_csv'); ?>
+                        </a>
+                        <a href="<?= admin_url('suppliers/add'); ?>" data-toggle="modal" data-target="#myModal" class="btn btn-primary" style="border-radius: 6px; font-weight: 700; padding: 8px 16px;">
+                            <i class="fa fa-plus-circle" style="margin-right: 5px;"></i> <?= lang('add_supplier'); ?>
+                        </a>
+                    </div>
+                </div>
+
 
                 <div class="table-responsive">
                     <table id="SupData" cellpadding="0" cellspacing="0" border="0"

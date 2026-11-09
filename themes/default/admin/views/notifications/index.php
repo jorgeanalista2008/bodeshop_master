@@ -34,7 +34,24 @@
         <div class="row">
             <div class="col-lg-12">
 
-                <p class="introtext"><?= lang('list_results'); ?></p>
+                
+                <!-- MODERN ACTION HEADER -->
+                <div class="modern-table-header">
+                    <div>
+                        <div class="modern-table-header-title">
+                            <i class="fa fa-bell text-primary"></i> <?= lang('notifications') ?>
+                        </div>
+                        <div class="modern-table-header-desc">
+                            Avisos y comunicados globales para usuarios del sistema
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="<?= admin_url('notifications/add'); ?>" data-toggle="modal" data-target="#myModal" class="btn btn-primary" style="border-radius: 6px; font-weight: 700; padding: 8px 16px;">
+                            <i class="fa fa-plus-circle" style="margin-right: 5px;"></i> <?= lang('add_notification') ?>
+                        </a>
+                    </div>
+                </div>
+
 
                 <div class="table-responsive">
                     <table id="NTTable" cellpadding="0" cellspacing="0" border="0"

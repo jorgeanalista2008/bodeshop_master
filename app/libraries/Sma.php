@@ -305,7 +305,7 @@ class Sma
         return $product->promotion && $product->start_date <= $today && $product->end_date >= $today && $product->promo_price;
     }
 
-    public function log_payment($type, $msg, $val = null)
+    public function log_payment($type, $msg = '', $val = null)
     {
         $this->load->library('logs');
         return (bool) $this->logs->write($type, $msg, $val);

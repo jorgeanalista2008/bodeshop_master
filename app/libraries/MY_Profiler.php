@@ -20,7 +20,8 @@ class MY_Profiler extends CI_Profiler
         $fields_displayed = 0;
 
         foreach ($this->_available_sections as $section) {
-            if ($this->_compile_{$section} !== false) {
+            $prop = '_compile_' . $section;
+            if ($this->{$prop} !== false) {
                 $func = '_compile_' . $section;
                 $output .= $this->{$func}();
                 $fields_displayed++;

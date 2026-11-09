@@ -59,7 +59,24 @@
     <div class="box-content">
         <div class="row">
             <div class="col-lg-12">
-                <p class="introtext"><?= lang('list_results'); ?></p>
+                
+                <!-- MODERN ACTION HEADER -->
+                <div class="modern-table-header">
+                    <div>
+                        <div class="modern-table-header-title">
+                            <i class="fa fa-th-large text-primary"></i> <?= lang('brands') ?>
+                        </div>
+                        <div class="modern-table-header-desc">
+                            Marcas y fabricantes de los productos del inventario
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="<?= admin_url('system_settings/add_brand'); ?>" data-toggle="modal" data-target="#myModal" class="btn btn-primary" style="border-radius: 6px; font-weight: 700; padding: 8px 16px;">
+                            <i class="fa fa-plus-circle" style="margin-right: 5px;"></i> <?= lang('add_brand') ?>
+                        </a>
+                    </div>
+                </div>
+
                 <div class="table-responsive">
                     <table id="BrandTable" class="table table-bordered table-hover table-striped reports-table">
                         <thead>

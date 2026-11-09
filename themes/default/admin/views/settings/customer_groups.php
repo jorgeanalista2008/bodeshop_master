@@ -44,6 +44,23 @@
 
                 <p class="introtext"><?php echo $this->lang->line('list_results'); ?></p>
 
+                
+                <!-- MODERN ACTION HEADER -->
+                <div class="modern-table-header">
+                    <div>
+                        <div class="modern-table-header-title">
+                            <i class="fa fa-users text-primary"></i> <?= lang('customer_groups') ?>
+                        </div>
+                        <div class="modern-table-header-desc">
+                            Categorías y grupos de clientes para tarifas y descuentos
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="<?= admin_url('system_settings/add_customer_group'); ?>" data-toggle="modal" data-target="#myModal" class="btn btn-primary" style="border-radius: 6px; font-weight: 700; padding: 8px 16px;">
+                            <i class="fa fa-plus-circle" style="margin-right: 5px;"></i> <?= lang('add_customer_group') ?>
+                        </a>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table id="CGData" class="table table-bordered table-hover table-striped reports-table">
                         <thead>

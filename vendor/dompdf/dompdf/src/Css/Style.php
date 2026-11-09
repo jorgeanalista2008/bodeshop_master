@@ -3083,7 +3083,13 @@ class Style
      */
     function set_z_index($val)
     {
-        if (round($val) != $val && $val !== "auto") {
+        if ($val === "auto") {
+            $this->_prop_cache["z_index"] = null;
+            $this->_props["z_index"] = $val;
+            return;
+        }
+
+        if (!is_numeric($val) || round($val) != $val) {
             return;
         }
 

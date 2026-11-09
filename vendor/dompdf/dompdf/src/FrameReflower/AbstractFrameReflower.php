@@ -248,24 +248,30 @@ abstract class AbstractFrameReflower
                 $minmax = $child->get_min_max_width();
 
                 if (in_array($iter->current()->get_style()->white_space, ["pre", "nowrap"])) {
-                    $inline_min += $minmax["min"];
+                    $inline_min += (float)$minmax["min"];
                 } else {
-                    $low[] = $minmax["min"];
+                    $low[] = is_numeric($minmax["min"]) ? (float)$minmax["min"] : 0;
                 }
 
-                $inline_max += $minmax["max"];
+                $inline_max += (float)$minmax["max"];
                 $iter->next();
             }
 
             if ($inline_max > 0) {
-                $high[] = $inline_max;
+                $high[] = (float)$inline_max;
             }
             if ($inline_min > 0) {
-                $low[] = $inline_min;
+                $low[] = (float)$inline_min;
             }
 
             if ($iter->valid()) {
-                list($low[], $high[]) = $iter->current()->get_min_max_width();
+                list($c_low, $c_high) = $iter->current()->get_min_max_width();
+                if (is_numeric($c_low)) {
+                    $low[] = (float)$c_low;
+                }
+                if (is_numeric($c_high)) {
+                    $high[] = (float)$c_high;
+                }
                 continue;
             }
         }
@@ -285,8 +291,9 @@ abstract class AbstractFrameReflower
             }
         }
 
-        $min += $delta;
-        $max += $delta;
+        $min = (float)$min + (float)$delta;
+        $max = (float)$max + (float)$delta;
+        return $this->_min_max_cache = [$min, $max, "min" => $min, "max" => $max];
         return $this->_min_max_cache = [$min, $max, "min" => $min, "max" => $max];
     }
 

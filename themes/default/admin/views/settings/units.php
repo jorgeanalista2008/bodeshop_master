@@ -54,7 +54,24 @@
     <div class="box-content">
         <div class="row">
             <div class="col-lg-12">
-                <p class="introtext"><?= lang('list_results'); ?></p>
+                
+                <!-- MODERN ACTION HEADER -->
+                <div class="modern-table-header">
+                    <div>
+                        <div class="modern-table-header-title">
+                            <i class="fa fa-balance-scale text-primary"></i> <?= lang('units') ?>
+                        </div>
+                        <div class="modern-table-header-desc">
+                            Unidades de medida principales y factores de conversión
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="<?= admin_url('system_settings/add_unit'); ?>" data-toggle="modal" data-target="#myModal" class="btn btn-primary" style="border-radius: 6px; font-weight: 700; padding: 8px 16px;">
+                            <i class="fa fa-plus-circle" style="margin-right: 5px;"></i> <?= lang('add_unit') ?>
+                        </a>
+                    </div>
+                </div>
+
                 <div class="table-responsive">
                     <table id="UnitTable" class="table table-bordered table-hover table-striped reports-table">
                         <thead>

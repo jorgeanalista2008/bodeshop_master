@@ -1,4 +1,4 @@
-<?php defined('BASEPATH') or exit('No direct script access allowed'); ?><!DOCTYPE html>
+﻿<?php defined('BASEPATH') or exit('No direct script access allowed'); ?><!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">

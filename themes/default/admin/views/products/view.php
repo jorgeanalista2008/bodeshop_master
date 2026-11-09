@@ -1,368 +1,718 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
-<?php if ($Owner || $Admin) {
-    ?>
+<?php
+// Compute key metrics
+$margin = ($product->price > 0 && $product->cost >= 0) ? round((($product->price - $product->cost) / $product->price) * 100, 1) : 0;
+$total_qty = 0;
+if (!empty($warehouses)) {
+    foreach ($warehouses as $wh) {
+        $total_qty += (float)$wh->quantity;
+    }
+}
+$is_alert = ($product->alert_quantity > 0 && $total_qty <= $product->alert_quantity);
+$is_out_of_stock = ($total_qty <= 0);
+?>
+<style type="text/css" media="screen">
+    /* Modern UI/UX Styles for Product View */
+    .pv-container {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    
+    /* Modern Nav Tabs */
+    .nav-tabs#myTab {
+        border-bottom: 2px solid #e2e8f0;
+        margin-bottom: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .nav-tabs#myTab > li > a {
+        border: 1px solid transparent !important;
+        border-radius: 8px 8px 0 0 !important;
+        font-weight: 600;
+        font-size: 13px;
+        color: #64748b;
+        padding: 10px 18px;
+        background: #f8fafc;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+    .nav-tabs#myTab > li > a:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+    .nav-tabs#myTab > li.active > a,
+    .nav-tabs#myTab > li.active > a:focus,
+    .nav-tabs#myTab > li.active > a:hover {
+        background: #ffffff !important;
+        color: #2563eb !important;
+        border: 1px solid #e2e8f0 !important;
+        border-bottom-color: #ffffff !important;
+        box-shadow: 0 -2px 0 0 #2563eb inset;
+    }
+
+    /* Product Header Card */
+    .pv-header-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .pv-header-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .pv-header-title h2 {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+    .pv-badge {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        letter-spacing: 0.5px;
+    }
+    .pv-badge.type { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .pv-badge.views { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+
+    /* KPI Summary Row */
+    .pv-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .pv-kpi-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .pv-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
+    }
+    .pv-kpi-info h4 {
+        margin: 0 0 4px 0;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        font-weight: 700;
+        color: #64748b;
+    }
+    .pv-kpi-info .pv-kpi-val {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+    .pv-kpi-info .pv-kpi-sub {
+        font-size: 11px;
+        color: #94a3b8;
+        margin-top: 4px;
+        display: block;
+    }
+    .pv-kpi-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+    .pv-kpi-icon.blue { background: #eff6ff; color: #2563eb; }
+    .pv-kpi-icon.emerald { background: #ecfdf5; color: #059669; }
+    .pv-kpi-icon.indigo { background: #e0e7ff; color: #4338ca; }
+    .pv-kpi-icon.amber { background: #fffbeb; color: #d97706; }
+    .pv-kpi-icon.red { background: #fef2f2; color: #dc2626; }
+
+    /* Modern Card Box */
+    .pv-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+    .pv-card-header {
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 14px 20px;
+        font-weight: 700;
+        font-size: 14px;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .pv-card-body {
+        padding: 20px;
+    }
+
+    /* Product Image Gallery */
+    .pv-main-image-wrap {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+    .pv-main-image-wrap img {
+        max-height: 280px;
+        margin: 0 auto;
+        border-radius: 8px;
+        transition: transform 0.3s;
+    }
+    .pv-main-image-wrap img:hover {
+        transform: scale(1.03);
+    }
+    .pv-gallery-thumbs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .pv-gallery-thumbs .gallery-image {
+        position: relative;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .pv-gallery-thumbs .delimg {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: rgba(220, 38, 38, 0.85);
+        color: #ffffff;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+    }
+
+    /* Barcode & QR Box */
+    .pv-scan-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px;
+        text-align: center;
+        margin-top: 16px;
+    }
+    .pv-scan-box .bc-item {
+        margin-bottom: 16px;
+    }
+    .pv-scan-box img.bcimg {
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+    }
+    .pv-scan-box .qr-wrap {
+        padding: 8px;
+        display: inline-block;
+        background: #ffffff;
+        border: 1px dashed #cbd5e1;
+        border-radius: 8px;
+    }
+
+    /* Attribute Specs Table */
+    .pv-specs-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .pv-specs-table tr td {
+        padding: 10px 14px;
+        font-size: 13px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+    .pv-specs-table tr td:first-child {
+        width: 35%;
+        font-weight: 600;
+        color: #64748b;
+    }
+    .pv-specs-table tr td:last-child {
+        width: 65%;
+        font-weight: 600;
+        color: #0f172a;
+    }
+    .pv-specs-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Modern Buttons */
+    .btn-pv-action {
+        font-weight: 600;
+        font-size: 13px;
+        border-radius: 8px;
+        padding: 9px 18px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.15s;
+    }
+    .btn-pv-primary { background: #2563eb; color: #ffffff !important; border: 1px solid #2563eb; }
+    .btn-pv-primary:hover { background: #1d4ed8; color: #ffffff !important; }
+    .btn-pv-default { background: #f8fafc; color: #334155 !important; border: 1px solid #cbd5e1; }
+    .btn-pv-default:hover { background: #f1f5f9; }
+    .btn-pv-danger { background: #fee2e2; color: #b91c1c !important; border: 1px solid #fecaca; }
+    .btn-pv-danger:hover { background: #fecaca; }
+    .btn-pv-warning { background: #fef3c7; color: #92400e !important; border: 1px solid #fde68a; }
+    .btn-pv-warning:hover { background: #fde68a; }
+
+    /* Sticky/Convenient Bottom Actions Toolbar */
+    .pv-actions-bar {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 10px;
+        margin-bottom: 30px;
+    }
+</style>
+
+<div class="pv-container">
+
+<?php if ($Owner || $Admin) { ?>
     <ul id="myTab" class="nav nav-tabs">
-        <li class=""><a href="#details" class="tab-grey"><?= lang('product_details') ?></a></li>
-        <li class=""><a href="#chart" class="tab-grey"><?= lang('chart') ?></a></li>
-        <li class=""><a href="#sales" class="tab-grey"><?= lang('sales') ?></a></li>
-        <li class=""><a href="#quotes" class="tab-grey"><?= lang('quotes') ?></a></li>
-        <?php if ($product->type == 'standard') {
-        ?>
-        <li class=""><a href="#purchases" class="tab-grey"><?= lang('purchases') ?></a></li>
-        <li class=""><a href="#transfers" class="tab-grey"><?= lang('transfers') ?></a></li>
-        <li class=""><a href="#damages" class="tab-grey"><?= lang('quantity_adjustments') ?></a></li>
-        <?php
-    } ?>
+        <li class="active"><a href="#details" class="tab-grey"><i class="fa fa-cube"></i> <?= lang('product_details') ?></a></li>
+        <li class=""><a href="#chart" class="tab-grey"><i class="fa fa-line-chart"></i> <?= lang('chart') ?></a></li>
+        <li class=""><a href="#sales" class="tab-grey"><i class="fa fa-shopping-cart"></i> <?= lang('sales') ?></a></li>
+        <li class=""><a href="#quotes" class="tab-grey"><i class="fa fa-file-text-o"></i> <?= lang('quotes') ?></a></li>
+        <?php if ($product->type == 'standard') { ?>
+            <li class=""><a href="#purchases" class="tab-grey"><i class="fa fa-truck"></i> <?= lang('purchases') ?></a></li>
+            <li class=""><a href="#transfers" class="tab-grey"><i class="fa fa-exchange"></i> <?= lang('transfers') ?></a></li>
+            <li class=""><a href="#damages" class="tab-grey"><i class="fa fa-sliders"></i> <?= lang('quantity_adjustments') ?></a></li>
+        <?php } ?>
     </ul>
 
-<div class="tab-content">
-    <div id="details" class="tab-pane fade in">
-        <?php
-} ?>
-        <div class="box">
-            <div class="box-header">
-                <h2 class="blue"><i class="fa-fw fa fa-file-text-o nb"></i> <?= $product->name . (SHOP && $product->hide != 1 ? ' (' . lang('shop_views') . ': ' . $product->views . ')' : ''); ?></h2>
+    <div class="tab-content">
+        <div id="details" class="tab-pane fade in active">
+<?php } ?>
 
-                <div class="box-icon">
-                    <ul class="btn-tasks">
-                        <li class="dropdown">
-                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                                <i class="icon fa fa-tasks tip" data-placement="left" title="<?= lang('actions') ?>"></i>
-                            </a>
-                            <ul class="dropdown-menu pull-right tasks-menus" role="menu"
-                                aria-labelledby="dLabel">
-                                <li>
-                                    <a href="<?= admin_url('products/edit/' . $product->id) ?>">
-                                        <i class="fa fa-edit"></i> <?= lang('edit') ?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="<?= admin_url('products/print_barcodes/' . $product->id) ?>">
-                                        <i class="fa fa-print"></i> <?= lang('print_barcode_label') ?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="<?= admin_url('products/pdf/' . $product->id) ?>">
-                                        <i class="fa fa-download"></i> <?= lang('pdf') ?>
-                                    </a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="#" class="bpo" title="<b><?= lang('delete_product') ?></b>"
-                                        data-content="<div style='width:150px;'><p><?= lang('r_u_sure') ?></p><a class='btn btn-danger' href='<?= admin_url('products/delete/' . $product->id) ?>'><?= lang('i_m_sure') ?></a> <button class='btn bpo-close'><?= lang('no') ?></button></div>"
-                                        data-html="true" data-placement="left">
-                                        <i class="fa fa-trash-o"></i> <?= lang('delete') ?>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+        <!-- Product Header Bar -->
+        <div class="pv-header-card">
+            <div class="pv-header-title">
+                <i class="fa fa-cube" style="color: #2563eb; font-size: 24px;"></i>
+                <h2><?= $product->name; ?></h2>
+                <span class="pv-badge type"><?= lang($product->type); ?></span>
+                <?php if (SHOP && $product->hide != 1) { ?>
+                    <span class="pv-badge views"><i class="fa fa-eye"></i> <?= lang('shop_views') . ': ' . $product->views; ?></span>
+                <?php } ?>
+            </div>
+
+            <div class="pv-header-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <?php if ($Owner || $Admin || $GP['products-edit']) { ?>
+                    <a href="<?= admin_url('products/edit/' . $product->id) ?>" class="btn-pv-action btn-pv-warning">
+                        <i class="fa fa-edit"></i> <?= lang('edit') ?>
+                    </a>
+                <?php } ?>
+                <a href="<?= admin_url('products/print_barcodes/' . $product->id) ?>" class="btn-pv-action btn-pv-default">
+                    <i class="fa fa-print"></i> <?= lang('print_barcode_label') ?>
+                </a>
+                <a href="<?= admin_url('products/pdf/' . $product->id) ?>" class="btn-pv-action btn-pv-default">
+                    <i class="fa fa-download"></i> <?= lang('pdf') ?>
+                </a>
+            </div>
+        </div>
+
+        <!-- KPI Summary Cards -->
+        <div class="pv-kpi-grid">
+            <div class="pv-kpi-card">
+                <div class="pv-kpi-info">
+                    <h4><?= lang('price'); ?> Venta</h4>
+                    <div class="pv-kpi-val" style="color: #2563eb;"><?= $this->sma->formatMoney($product->price); ?></div>
+                    <?php if ($product->promotion) { ?>
+                        <span class="pv-kpi-sub" style="color: #059669; font-weight: 700;">Promo: <?= $this->sma->formatMoney($product->promo_price); ?></span>
+                    <?php } else { ?>
+                        <span class="pv-kpi-sub"><?= $tax_rate ? $tax_rate->name : 'Sin Impuesto'; ?></span>
+                    <?php } ?>
+                </div>
+                <div class="pv-kpi-icon blue">
+                    <i class="fa fa-tag"></i>
                 </div>
             </div>
-            <div class="box-content">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <p class="introtext"><?php echo lang('product_details'); ?></p>
 
-                        <div class="row">
-                            <div class="col-sm-5">
-                                <img src="<?= base_url() ?>assets/uploads/<?= $product->image ?>"
-                                     alt="<?= $product->name ?>" class="img-responsive img-thumbnail"/>
+            <?php if ($Owner || $Admin || $this->session->userdata('show_cost')) { ?>
+            <div class="pv-kpi-card">
+                <div class="pv-kpi-info">
+                    <h4><?= lang('cost'); ?> Compra</h4>
+                    <div class="pv-kpi-val" style="color: #475569;"><?= $this->sma->formatMoney($product->cost); ?></div>
+                    <span class="pv-kpi-sub">Costo base unitario</span>
+                </div>
+                <div class="pv-kpi-icon indigo">
+                    <i class="fa fa-money"></i>
+                </div>
+            </div>
 
-                                <div id="multiimages" class="padding10">
-                                    <?php if (!empty($images)) {
-        echo '<a class="img-thumbnail" data-toggle="lightbox" data-gallery="multiimages" data-parent="#multiimages" href="' . base_url() . 'assets/uploads/' . $product->image . '" style="margin-right:5px;"><img class="img-responsive" src="' . base_url() . 'assets/uploads/thumbs/' . $product->image . '" alt="' . $product->image . '" style="width:' . $Settings->twidth . 'px; height:' . $Settings->theight . 'px;" /></a>';
-        foreach ($images as $ph) {
-            echo '<div class="gallery-image"><a class="img-thumbnail" data-toggle="lightbox" data-gallery="multiimages" data-parent="#multiimages" href="' . base_url() . 'assets/uploads/' . $ph->photo . '" style="margin-right:5px;"><img class="img-responsive" src="' . base_url() . 'assets/uploads/thumbs/' . $ph->photo . '" alt="' . $ph->photo . '" style="width:' . $Settings->twidth . 'px; height:' . $Settings->theight . 'px;" /></a>';
-            if ($Owner || $Admin || $GP['products-edit']) {
-                echo '<a href="#" class="delimg" data-item-id="' . $ph->id . '"><i class="fa fa-times"></i></a>';
-            }
-            echo '</div>';
-        }
-    }
-                                    ?>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </div>
-                            <div class="col-sm-7">
-                                <div class="table-responsive">
-                                    <table class="table table-borderless table-striped dfTable table-right-left">
-                                        <tbody>
-                                        <tr>
-                                            <td colspan="2" style="background-color:#FFF;"></td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width:30%;"><?= lang('barcode_qrcode'); ?></td>
-                                            <td style="width:70%;">
-                                            <img src="<?= admin_url('misc/barcode/' . $product->code . '/' . $product->barcode_symbology . '/74/0'); ?>" alt="<?= $product->code; ?>" class="bcimg" />
-                                                <?= $this->sma->qrcode('link', urlencode(admin_url('products/view/' . $product->id)), 2); ?>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><?= lang('type'); ?></td>
-                                            <td><?php echo lang($product->type); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td><?= lang('name'); ?></td>
-                                            <td><?php echo $product->name; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td><?= lang('code'); ?></td>
-                                            <td><?php echo $product->code; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td><?= lang('brand'); ?></td>
-                                            <td><?= $brand ? $brand->name : ''; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td><?= lang('category'); ?></td>
-                                            <td><?php echo $category->name; ?></td>
-                                        </tr>
-                                        <?php if ($product->subcategory_id) {
-                                        ?>
-                                            <tr>
-                                                <td><?= lang('subcategory'); ?></td>
-                                                <td><?php echo $subcategory->name; ?></td>
-                                            </tr>
-                                        <?php
-                                    } ?>
-                                        <tr>
-                                            <td><?= lang('unit'); ?></td>
-                                            <td><?= $unit ? $unit->name . ' (' . $unit->code . ')' : ''; ?></td>
-                                        </tr>
-                                        <?php if ($Owner || $Admin) {
-                                        echo '<tr><td>' . lang('cost') . '</td><td>' . $this->sma->formatMoney($product->cost) . '</td></tr>';
-                                        echo '<tr><td>' . lang('price') . '</td><td>' . $this->sma->formatMoney($product->price) . '</td></tr>';
-                                        if ($product->promotion) {
-                                            echo '<tr><td>' . lang('promotion') . '</td><td>' . $this->sma->formatMoney($product->promo_price) . ' (' . $this->sma->hrsd($product->start_date) . ' - ' . $this->sma->hrsd($product->end_date) . ')</td></tr>';
-                                        }
-                                    } else {
-                                        if ($this->session->userdata('show_cost')) {
-                                            echo '<tr><td>' . lang('cost') . '</td><td>' . $this->sma->formatMoney($product->cost) . '</td></tr>';
-                                        }
-                                        if ($this->session->userdata('show_price')) {
-                                            echo '<tr><td>' . lang('price') . '</td><td>' . $this->sma->formatMoney($product->price) . '</td></tr>';
-                                            if ($product->promotion) {
-                                                echo '<tr><td>' . lang('promotion') . '</td><td>' . $this->sma->formatMoney($product->promo_price) . ' (' . $this->sma->hrsd($product->start_date) . ' - ' . $this->sma->hrsd($product->start_date) . ')</td></tr>';
-                                            }
-                                        }
-                                    }
-                                        ?>
+            <div class="pv-kpi-card">
+                <div class="pv-kpi-info">
+                    <h4>Margen de Ganancia</h4>
+                    <div class="pv-kpi-val" style="color: <?= $margin >= 20 ? '#059669' : ($margin > 0 ? '#d97706' : '#dc2626') ?>;">
+                        +<?= $margin; ?>%
+                    </div>
+                    <span class="pv-kpi-sub"><?= $this->sma->formatMoney($product->price - $product->cost); ?> / unidad</span>
+                </div>
+                <div class="pv-kpi-icon emerald">
+                    <i class="fa fa-percent"></i>
+                </div>
+            </div>
+            <?php } ?>
 
-                                        <?php if ($product->tax_rate) {
-                                            ?>
-                                            <tr>
-                                                <td><?= lang('tax_rate'); ?></td>
-                                                <td><?php echo $tax_rate->name; ?></td>
-                                            </tr>
-                                            <tr>
-                                                <td><?= lang('tax_method'); ?></td>
-                                                <td><?php echo $product->tax_method == 0 ? lang('inclusive') : lang('exclusive'); ?></td>
-                                            </tr>
-                                        <?php
-                                        } ?>
-                                        <?php if ($product->alert_quantity != 0) {
-                                            ?>
-                                            <tr>
-                                                <td><?= lang('alert_quantity'); ?></td>
-                                                <td><?php echo $this->sma->formatQuantity($product->alert_quantity); ?></td>
-                                            </tr>
-                                        <?php
-                                        } ?>
-                                        <?php if ($variants) {
-                                            ?>
-                                            <tr>
-                                                <td><?= lang('product_variants'); ?></td>
-                                                <td><?php foreach ($variants as $variant) {
-                                                echo '<span class="label label-primary">' . $variant->name . '</span> ';
-                                            } ?></td>
-                                            </tr>
-                                        <?php
-                                        } ?>
+            <div class="pv-kpi-card">
+                <div class="pv-kpi-info">
+                    <h4>Stock Global</h4>
+                    <div class="pv-kpi-val" style="color: <?= $is_out_of_stock ? '#dc2626' : ($is_alert ? '#d97706' : '#059669') ?>;">
+                        <?= $this->sma->formatQuantity($total_qty); ?>
+                    </div>
+                    <span class="pv-kpi-sub">
+                        <?= $is_out_of_stock ? 'Agotado' : ($is_alert ? 'Alerta Stock Mínimo' : 'En Existencia'); ?>
+                    </span>
+                </div>
+                <div class="pv-kpi-icon <?= $is_out_of_stock ? 'red' : ($is_alert ? 'amber' : 'emerald') ?>">
+                    <i class="fa fa-cubes"></i>
+                </div>
+            </div>
+        </div>
 
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="clearfix"></div>
-                            <div class="col-sm-12">
-                                <div class="row">
-                                    <div class="col-sm-5">
-                                        <?php if ($product->cf1 || $product->cf2 || $product->cf3 || $product->cf4 || $product->cf5 || $product->cf6) {
-                                            ?>
-                                            <h3 class="bold"><?= lang('custom_fields') ?></h3>
-                                            <div class="table-responsive">
-                                                <table
-                                                    class="table table-bordered table-striped table-condensed dfTable two-columns">
-                                                    <thead>
-                                                    <tr>
-                                                        <th><?= lang('custom_field') ?></th>
-                                                        <th><?= lang('value') ?></th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <?php
-                                                    if ($product->cf1) {
-                                                        echo '<tr><td>' . lang('pcf1') . '</td><td>' . $product->cf1 . '</td></tr>';
-                                                    }
-                                            if ($product->cf2) {
-                                                echo '<tr><td>' . lang('pcf2') . '</td><td>' . $product->cf2 . '</td></tr>';
-                                            }
-                                            if ($product->cf3) {
-                                                echo '<tr><td>' . lang('pcf3') . '</td><td>' . $product->cf3 . '</td></tr>';
-                                            }
-                                            if ($product->cf4) {
-                                                echo '<tr><td>' . lang('pcf4') . '</td><td>' . $product->cf4 . '</td></tr>';
-                                            }
-                                            if ($product->cf5) {
-                                                echo '<tr><td>' . lang('pcf5') . '</td><td>' . $product->cf5 . '</td></tr>';
-                                            }
-                                            if ($product->cf6) {
-                                                echo '<tr><td>' . lang('pcf6') . '</td><td>' . $product->cf6 . '</td></tr>';
-                                            } ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        <?php
-                                        } ?>
-
-                                        <?php if ((!$Supplier || !$Customer) && !empty($warehouses) && $product->type == 'standard') {
-                                            ?>
-                                            <h3 class="bold"><?= lang('warehouse_quantity') ?></h3>
-                                            <div class="table-responsive">
-                                                <table
-                                                    class="table table-bordered table-striped table-condensed dfTable three-columns">
-                                                    <thead>
-                                                    <tr>
-                                                        <th><?= lang('warehouse_name') ?></th>
-                                                        <th><?= lang('quantity') . ' (' . lang('rack') . ')'; ?></th>
-                                                        <th><?= lang('avg_cost'); ?></th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <?php foreach ($warehouses as $warehouse) {
-                                                if ($warehouse->quantity != 0) {
-                                                    echo '<tr><td>' . $warehouse->name . ' (' . $warehouse->code . ')</td><td><strong>' . $this->sma->formatQuantity($warehouse->quantity) . '</strong>' . ($warehouse->rack ? ' (' . $warehouse->rack . ')' : '') . '</td><td>' . $warehouse->avg_cost . '</td></tr>';
-                                                }
-                                            } ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        <?php
-                                        } ?>
-                                    </div>
-                                    <div class="col-sm-7">
-                                        <?php if ($product->type == 'combo') {
-                                            ?>
-                                            <h3 class="bold"><?= lang('combo_items') ?></h3>
-                                            <div class="table-responsive">
-                                                <table
-                                                    class="table table-bordered table-striped table-condensed dfTable two-columns">
-                                                    <thead>
-                                                    <tr>
-                                                        <th><?= lang('product_name') ?></th>
-                                                        <th><?= lang('quantity') ?></th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <?php foreach ($combo_items as $combo_item) {
-                                                echo '<tr><td>' . $combo_item->name . ' (' . $combo_item->code . ') </td><td>' . $this->sma->formatQuantity($combo_item->qty) . '</td></tr>';
-                                            } ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        <?php
-                                        } ?>
-                                        <?php if (!empty($options)) {
-                                            ?>
-                                            <h3 class="bold"><?= lang('product_variants_quantity'); ?></h3>
-                                            <div class="table-responsive">
-                                                <table
-                                                    class="table table-bordered table-striped table-condensed dfTable">
-                                                    <thead>
-                                                    <tr>
-                                                        <th><?= lang('warehouse_name') ?></th>
-                                                        <th><?= lang('product_variant'); ?></th>
-                                                        <th><?= lang('quantity') . ' (' . lang('rack') . ')'; ?></th>
-                                                        <?php if ($Owner || $Admin) {
-                                                echo '<th>' . lang('cost') . '</th>';
-                                                echo '<th>' . lang('price') . '</th>';
-                                            } ?>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <?php
-                                                    foreach ($options as $option) {
-                                                        if ($option->wh_qty != 0) {
-                                                            echo '<tr><td>' . $option->wh_name . '</td><td>' . $option->name . '</td><td class="text-center">' . $this->sma->formatQuantity($option->wh_qty) . '</td>';
-                                                            if ($Owner || $Admin && (!$Customer || $this->session->userdata('show_cost'))) {
-                                                                echo '<td class="text-right">' . $this->sma->formatMoney($option->cost) . '</td><td class="text-right">' . $this->sma->formatMoney($option->price) . '</td>';
-                                                            }
-                                                            echo '</tr>';
-                                                        }
-                                                    } ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        <?php
-                                        } ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-12">
-
-                                <?= $product->details ? '<div class="panel panel-success"><div class="panel-heading">' . lang('product_details_for_invoice') . '</div><div class="panel-body">' . $product->details . '</div></div>' : ''; ?>
-                                <?= $product->product_details ? '<div class="panel panel-primary"><div class="panel-heading">' . lang('product_details') . '</div><div class="panel-body">' . $product->product_details . '</div></div>' : ''; ?>
-
-                            </div>
+        <!-- Two Columns Layout -->
+        <div class="row">
+            <!-- Left Column: Visuals & Scanning -->
+            <div class="col-md-4 col-sm-5">
+                <div class="pv-card">
+                    <div class="pv-card-header">
+                        <i class="fa fa-picture-o text-primary"></i> <?= lang('image'); ?> y Galería
+                    </div>
+                    <div class="pv-card-body">
+                        <div class="pv-main-image-wrap">
+                            <a data-toggle="lightbox" href="<?= base_url() ?>assets/uploads/<?= $product->image ?>">
+                                <img src="<?= base_url() ?>assets/uploads/<?= $product->image ?>" alt="<?= $product->name ?>" class="img-responsive"/>
+                            </a>
                         </div>
 
-                        <?php if (!$Supplier || !$Customer) {
-                                            ?>
-                        <div class="buttons">
-                            <div class="btn-group btn-group-justified">
-                                <div class="btn-group">
-                                    <a href="<?= admin_url('products/print_barcodes/' . $product->id) ?>" class="tip btn btn-primary" title="<?= lang('print_barcode_label') ?>">
-                                        <i class="fa fa-print"></i>
-                                        <span class="hidden-sm hidden-xs"><?= lang('print_barcode_label') ?></span>
-                                    </a>
+                        <?php if (!empty($images)) { ?>
+                            <div class="pv-gallery-thumbs" id="multiimages">
+                                <a class="img-thumbnail" data-toggle="lightbox" data-gallery="multiimages" data-parent="#multiimages" href="<?= base_url() ?>assets/uploads/<?= $product->image ?>">
+                                    <img src="<?= base_url() ?>assets/uploads/thumbs/<?= $product->image ?>" alt="<?= $product->image ?>" style="width: 50px; height: 50px; object-fit: cover;" />
+                                </a>
+                                <?php foreach ($images as $ph) { ?>
+                                    <div class="gallery-image">
+                                        <a class="img-thumbnail" data-toggle="lightbox" data-gallery="multiimages" data-parent="#multiimages" href="<?= base_url() ?>assets/uploads/<?= $ph->photo ?>">
+                                            <img src="<?= base_url() ?>assets/uploads/thumbs/<?= $ph->photo ?>" alt="<?= $ph->photo ?>" style="width: 50px; height: 50px; object-fit: cover;" />
+                                        </a>
+                                        <?php if ($Owner || $Admin || $GP['products-edit']) { ?>
+                                            <a href="#" class="delimg" data-item-id="<?= $ph->id ?>" title="Eliminar foto"><i class="fa fa-times"></i></a>
+                                        <?php } ?>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                        <?php } ?>
+
+                        <!-- Barcode & QR Code Section -->
+                        <div class="pv-scan-box">
+                            <div class="bc-item">
+                                <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">
+                                    Código de Barras (<?= $product->barcode_symbology; ?>)
+                                </span>
+                                <img src="<?= admin_url('misc/barcode/' . $product->code . '/' . $product->barcode_symbology . '/74/0'); ?>" alt="<?= $product->code; ?>" class="bcimg" />
+                                <div style="font-family: monospace; font-size: 13px; font-weight: 700; margin-top: 4px; color: #0f172a;">
+                                    <?= $product->code; ?>
                                 </div>
-                                <div class="btn-group">
-                                    <a href="<?= admin_url('products/pdf/' . $product->id) ?>" class="tip btn btn-primary" title="<?= lang('pdf') ?>">
-                                        <i class="fa fa-download"></i> <span class="hidden-sm hidden-xs"><?= lang('pdf') ?></span>
-                                    </a>
-                                </div>
-                                <div class="btn-group">
-                                    <a href="<?= admin_url('products/edit/' . $product->id) ?>" class="tip btn btn-warning tip" title="<?= lang('edit_product') ?>">
-                                        <i class="fa fa-edit"></i> <span class="hidden-sm hidden-xs"><?= lang('edit') ?></span>
-                                    </a>
-                                </div>
-                                <div class="btn-group">
-                                    <a href="#" class="tip btn btn-danger bpo" title="<b><?= lang('delete_product') ?></b>"
-                                        data-content="<div style='width:150px;'><p><?= lang('r_u_sure') ?></p><a class='btn btn-danger' href='<?= admin_url('products/delete/' . $product->id) ?>'><?= lang('i_m_sure') ?></a> <button class='btn bpo-close'><?= lang('no') ?></button></div>"
-                                        data-html="true" data-placement="top">
-                                        <i class="fa fa-trash-o"></i> <span class="hidden-sm hidden-xs"><?= lang('delete') ?></span>
-                                    </a>
+                            </div>
+
+                            <div style="border-top: 1px dashed #e2e8f0; padding-top: 14px; margin-top: 10px;">
+                                <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b; display: block; margin-bottom: 8px;">
+                                    Acceso Rápido Móvil (QR)
+                                </span>
+                                <div class="qr-wrap">
+                                    <?= $this->sma->qrcode('link', urlencode(admin_url('products/view/' . $product->id)), 2); ?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <script type="text/javascript">
-            $(document).ready(function () {
-                $('.tip').tooltip();
-            });
-        </script>
-    <?php
-                                        } ?>
 
-        <?php if ($Owner || $Admin) {
-                                            ?>
+            <!-- Right Column: Specs & Inventory Breakdown -->
+            <div class="col-md-8 col-sm-7">
+                <!-- Specifications Card -->
+                <div class="pv-card">
+                    <div class="pv-card-header">
+                        <i class="fa fa-info-circle text-primary"></i> <?= lang('product_details'); ?> y Especificaciones
+                    </div>
+                    <div class="pv-card-body" style="padding: 0;">
+                        <table class="pv-specs-table">
+                            <tbody>
+                                <tr>
+                                    <td><?= lang('code'); ?> SKU</td>
+                                    <td><span style="font-family: monospace; background: #f1f5f9; padding: 3px 8px; border-radius: 4px; font-size: 13px;"><?= $product->code; ?></span></td>
+                                </tr>
+                                <tr>
+                                    <td><?= lang('brand'); ?></td>
+                                    <td><?= $brand ? $brand->name : '<span class="text-muted">N/A</span>'; ?></td>
+                                </tr>
+                                <tr>
+                                    <td><?= lang('category'); ?></td>
+                                    <td>
+                                        <span class="label label-info" style="font-size: 12px; font-weight: 600;"><?= $category ? $category->name : 'N/A'; ?></span>
+                                        <?php if ($product->subcategory_id && $subcategory) { ?>
+                                            <span style="color: #94a3b8; margin: 0 4px;">&gt;</span>
+                                            <span class="label label-default" style="font-size: 12px; font-weight: 600;"><?= $subcategory->name; ?></span>
+                                        <?php } ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><?= lang('unit'); ?></td>
+                                    <td><?= $unit ? $unit->name . ' (' . $unit->code . ')' : '<span class="text-muted">N/A</span>'; ?></td>
+                                </tr>
+                                <?php if ($product->tax_rate) { ?>
+                                <tr>
+                                    <td><?= lang('tax_rate'); ?></td>
+                                    <td><?= $tax_rate ? $tax_rate->name : ''; ?> (<?= $product->tax_method == 0 ? lang('inclusive') : lang('exclusive'); ?>)</td>
+                                </tr>
+                                <?php } ?>
+                                <?php if ($product->alert_quantity != 0) { ?>
+                                <tr>
+                                    <td><?= lang('alert_quantity'); ?> (Mínimo)</td>
+                                    <td><span class="badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 700;"><?= $this->sma->formatQuantity($product->alert_quantity); ?></span></td>
+                                </tr>
+                                <?php } ?>
+                                <?php if ($variants) { ?>
+                                <tr>
+                                    <td><?= lang('product_variants'); ?></td>
+                                    <td>
+                                        <?php foreach ($variants as $variant) {
+                                            echo '<span class="label label-primary" style="margin-right: 4px; display: inline-block;">' . $variant->name . '</span> ';
+                                        } ?>
+                                    </td>
+                                </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Warehouse Quantities Breakdown -->
+                <?php if ((!$Supplier || !$Customer) && !empty($warehouses) && $product->type == 'standard') { ?>
+                <div class="pv-card">
+                    <div class="pv-card-header">
+                        <i class="fa fa-building-o text-primary"></i> <?= lang('warehouse_quantity'); ?>
+                    </div>
+                    <div class="pv-card-body" style="padding: 0;">
+                        <table class="table table-bordered table-striped" style="margin-bottom: 0;">
+                            <thead>
+                                <tr style="background: #f8fafc; font-size: 11px; text-transform: uppercase; color: #64748b;">
+                                    <th><?= lang('warehouse_name') ?></th>
+                                    <th style="text-align: center;"><?= lang('quantity') ?></th>
+                                    <th><?= lang('rack') ?></th>
+                                    <?php if ($Owner || $Admin) { ?><th style="text-align: right;"><?= lang('avg_cost'); ?></th><?php } ?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($warehouses as $warehouse) { ?>
+                                    <tr>
+                                        <td style="font-weight: 600; color: #1e293b;"><?= $warehouse->name . ' (' . $warehouse->code . ')'; ?></td>
+                                        <td style="text-align: center;">
+                                            <span class="badge" style="background: <?= $warehouse->quantity > 0 ? '#dcfce7; color: #15803d;' : '#fee2e2; color: #b91c1c;' ?> font-weight: 700;">
+                                                <?= $this->sma->formatQuantity($warehouse->quantity); ?>
+                                            </span>
+                                        </td>
+                                        <td><?= $warehouse->rack ? $warehouse->rack : '<span class="text-muted">-</span>'; ?></td>
+                                        <?php if ($Owner || $Admin) { ?>
+                                            <td style="text-align: right; font-weight: 600; color: #475569;"><?= $warehouse->avg_cost ? $this->sma->formatMoney($warehouse->avg_cost) : '-'; ?></td>
+                                        <?php } ?>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <?php } ?>
+
+                <!-- Product Variants in Warehouses -->
+                <?php if (!empty($options)) { ?>
+                <div class="pv-card">
+                    <div class="pv-card-header">
+                        <i class="fa fa-tags text-primary"></i> <?= lang('product_variants_quantity'); ?>
+                    </div>
+                    <div class="pv-card-body" style="padding: 0;">
+                        <table class="table table-bordered table-striped" style="margin-bottom: 0;">
+                            <thead>
+                                <tr style="background: #f8fafc; font-size: 11px; text-transform: uppercase; color: #64748b;">
+                                    <th><?= lang('warehouse_name') ?></th>
+                                    <th><?= lang('product_variant'); ?></th>
+                                    <th style="text-align: center;"><?= lang('quantity') ?></th>
+                                    <?php if ($Owner || $Admin) { ?>
+                                        <th style="text-align: right;"><?= lang('cost') ?></th>
+                                        <th style="text-align: right;"><?= lang('price') ?></th>
+                                    <?php } ?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($options as $option) {
+                                    if ($option->wh_qty != 0) { ?>
+                                    <tr>
+                                        <td><?= $option->wh_name; ?></td>
+                                        <td><span class="label label-primary"><?= $option->name; ?></span></td>
+                                        <td style="text-align: center; font-weight: 700;"><?= $this->sma->formatQuantity($option->wh_qty); ?></td>
+                                        <?php if ($Owner || $Admin) { ?>
+                                            <td style="text-align: right;"><?= $this->sma->formatMoney($option->cost); ?></td>
+                                            <td style="text-align: right; font-weight: 700; color: #2563eb;"><?= $this->sma->formatMoney($option->price); ?></td>
+                                        <?php } ?>
+                                    </tr>
+                                <?php } } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <?php } ?>
+
+                <!-- Combo Items -->
+                <?php if ($product->type == 'combo' && !empty($combo_items)) { ?>
+                <div class="pv-card">
+                    <div class="pv-card-header">
+                        <i class="fa fa-th-large text-primary"></i> <?= lang('combo_items') ?>
+                    </div>
+                    <div class="pv-card-body" style="padding: 0;">
+                        <table class="table table-bordered table-striped" style="margin-bottom: 0;">
+                            <thead>
+                                <tr style="background: #f8fafc; font-size: 11px; text-transform: uppercase; color: #64748b;">
+                                    <th><?= lang('product_name') ?></th>
+                                    <th style="text-align: center;"><?= lang('quantity') ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($combo_items as $combo_item) { ?>
+                                    <tr>
+                                        <td style="font-weight: 600;"><?= $combo_item->name . ' (' . $combo_item->code . ')'; ?></td>
+                                        <td style="text-align: center; font-weight: 700;"><?= $this->sma->formatQuantity($combo_item->qty); ?></td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <?php } ?>
+
+                <!-- Custom Fields -->
+                <?php if ($product->cf1 || $product->cf2 || $product->cf3 || $product->cf4 || $product->cf5 || $product->cf6) { ?>
+                <div class="pv-card">
+                    <div class="pv-card-header">
+                        <i class="fa fa-list text-primary"></i> <?= lang('custom_fields'); ?>
+                    </div>
+                    <div class="pv-card-body" style="padding: 0;">
+                        <table class="pv-specs-table">
+                            <tbody>
+                                <?php if ($product->cf1) { echo '<tr><td>' . lang('pcf1') . '</td><td>' . $product->cf1 . '</td></tr>'; } ?>
+                                <?php if ($product->cf2) { echo '<tr><td>' . lang('pcf2') . '</td><td>' . $product->cf2 . '</td></tr>'; } ?>
+                                <?php if ($product->cf3) { echo '<tr><td>' . lang('pcf3') . '</td><td>' . $product->cf3 . '</td></tr>'; } ?>
+                                <?php if ($product->cf4) { echo '<tr><td>' . lang('pcf4') . '</td><td>' . $product->cf4 . '</td></tr>'; } ?>
+                                <?php if ($product->cf5) { echo '<tr><td>' . lang('pcf5') . '</td><td>' . $product->cf5 . '</td></tr>'; } ?>
+                                <?php if ($product->cf6) { echo '<tr><td>' . lang('pcf6') . '</td><td>' . $product->cf6 . '</td></tr>'; } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <?php } ?>
+            </div>
+        </div>
+
+        <!-- Product Notes & Descriptions -->
+        <?php if ($product->details || $product->product_details) { ?>
+        <div class="row" style="margin-top: 10px;">
+            <?php if ($product->details) { ?>
+            <div class="<?= $product->product_details ? 'col-sm-6' : 'col-sm-12' ?>">
+                <div class="pv-card">
+                    <div class="pv-card-header" style="background: #f0fdf4; border-color: #bbf7d0; color: #166534;">
+                        <i class="fa fa-file-text-o"></i> <?= lang('product_details_for_invoice'); ?>
+                    </div>
+                    <div class="pv-card-body" style="color: #334155; line-height: 1.6;">
+                        <?= $product->details; ?>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+
+            <?php if ($product->product_details) { ?>
+            <div class="<?= $product->details ? 'col-sm-6' : 'col-sm-12' ?>">
+                <div class="pv-card">
+                    <div class="pv-card-header" style="background: #eff6ff; border-color: #bfdbfe; color: #1e40af;">
+                        <i class="fa fa-align-left"></i> <?= lang('product_details'); ?>
+                    </div>
+                    <div class="pv-card-body" style="color: #334155; line-height: 1.6;">
+                        <?= $product->product_details; ?>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+        </div>
+        <?php } ?>
+
+        <!-- Bottom Action Bar -->
+        <?php if (!$Supplier || !$Customer) { ?>
+        <div class="pv-actions-bar">
+            <div style="font-weight: 600; color: #64748b; font-size: 13px;">
+                <i class="fa fa-cogs"></i> Acciones del Producto
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <a href="<?= admin_url('products/print_barcodes/' . $product->id) ?>" class="btn-pv-action btn-pv-default">
+                    <i class="fa fa-print"></i> <?= lang('print_barcode_label') ?>
+                </a>
+                <a href="<?= admin_url('products/pdf/' . $product->id) ?>" class="btn-pv-action btn-pv-default">
+                    <i class="fa fa-download"></i> <?= lang('pdf') ?>
+                </a>
+                <?php if ($Owner || $Admin || $GP['products-edit']) { ?>
+                    <a href="<?= admin_url('products/edit/' . $product->id) ?>" class="btn-pv-action btn-pv-warning">
+                        <i class="fa fa-edit"></i> <?= lang('edit') ?>
+                    </a>
+                <?php } ?>
+                <?php if ($Owner || $Admin || $GP['products-delete']) { ?>
+                    <a href="#" class="btn-pv-action btn-pv-danger bpo" title="<b><?= lang('delete_product') ?></b>"
+                        data-content="<div style='width:150px;'><p><?= lang('r_u_sure') ?></p><a class='btn btn-danger' href='<?= admin_url('products/delete/' . $product->id) ?>'><?= lang('i_m_sure') ?></a> <button class='btn bpo-close'><?= lang('no') ?></button></div>"
+                        data-html="true" data-placement="top">
+                        <i class="fa fa-trash-o"></i> <?= lang('delete') ?>
+                    </a>
+                <?php } ?>
+            </div>
+        </div>
+        <?php } ?>
+
+<?php if ($Owner || $Admin) { ?>
     </div>
-    <div id="chart" class="tab-pane fade">
+<div id="chart" class="tab-pane fade">
         <script src="<?= $assets; ?>js/hc/highcharts.js"></script>
         <script type="text/javascript">
             $(function () {

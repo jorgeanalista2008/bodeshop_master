@@ -514,6 +514,7 @@ class Shop extends MY_Shop_Controller
             redirect('notify/error_404');
         }
         $this->data['page']       = $page;
+        $this->data['pages']      = $this->shop_model->getAllPages();
         $this->data['page_title'] = $page->title;
         $this->data['page_desc']  = $page->description;
         $this->page_construct('pages/page', $this->data);

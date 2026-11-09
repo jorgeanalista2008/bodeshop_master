@@ -66,21 +66,48 @@ class Main extends MY_Shop_Controller
         if (!SHOP) {
             redirect('admin/auth/forgot_password');
         }
+        if ($this->loggedIn) {
+            redirect('/');
+        }
         $this->form_validation->set_rules('email', lang('email_address'), 'required|valid_email');
 
         if ($this->form_validation->run() == false) {
-            $this->sma->send_json(validation_errors());
+            if ($this->input->is_ajax_request()) {
+                $this->sma->send_json(validation_errors());
+            } else {
+                $this->data['error']       = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
+                $this->data['message']     = $this->session->flashdata('message');
+                $this->data['page_title']  = lang('forgot_password');
+                $this->data['page_desc']   = $this->shop_settings->description;
+                $this->page_construct('user/forgot_password', $this->data);
+            }
         } else {
             $identity = $this->ion_auth->where('email', strtolower($this->input->post('email')))->users()->row();
             if (empty($identity)) {
-                $this->sma->send_json(lang('forgot_password_email_not_found'));
+                if ($this->input->is_ajax_request()) {
+                    $this->sma->send_json(lang('forgot_password_email_not_found'));
+                } else {
+                    $this->session->set_flashdata('error', lang('forgot_password_email_not_found'));
+                    redirect('forgot_password');
+                }
+                return;
             }
 
             $forgotten = $this->ion_auth->forgotten_password($identity->email);
             if ($forgotten) {
-                $this->sma->send_json(['status' => 'success', 'message' => $this->ion_auth->messages()]);
+                if ($this->input->is_ajax_request()) {
+                    $this->sma->send_json(['status' => 'success', 'message' => $this->ion_auth->messages()]);
+                } else {
+                    $this->session->set_flashdata('message', $this->ion_auth->messages());
+                    redirect('login');
+                }
             } else {
-                $this->sma->send_json(['status' => 'error', 'message' => $this->ion_auth->errors()]);
+                if ($this->input->is_ajax_request()) {
+                    $this->sma->send_json(['status' => 'error', 'message' => $this->ion_auth->errors()]);
+                } else {
+                    $this->session->set_flashdata('error', $this->ion_auth->errors());
+                    redirect('forgot_password');
+                }
             }
         }
     }
@@ -99,7 +126,14 @@ class Main extends MY_Shop_Controller
         if ($this->shop_settings->private && !$this->loggedIn) {
             redirect('/login');
         }
-        $this->data['featured_products'] = $this->shop_model->getFeaturedProducts();
+        $this->data['featured_products']   = $this->shop_model->getTopShowcaseProducts(12);
+        $this->data['promo_products']      = $this->shop_model->getPromotionalProducts(8);
+        $this->data['aluminio_products']   = $this->shop_model->getCategoryProducts(43, 8); // Perfiles de aluminio
+        $this->data['ferreteria_products'] = $this->shop_model->getCategoryProducts(42, 8); // Ferreteria
+        $this->data['acero_products']      = $this->shop_model->getCategoryProducts(112, 8); // Acero inoxidable
+        $this->data['ventanas_products']   = $this->shop_model->getCategoryProducts(139, 8); // Ventanas
+        $this->data['drywall_products']    = $this->shop_model->getCategoryProducts(51, 8); // Drywall y techos
+
         $this->data['slider']            = json_decode($this->shop_settings->slider);
         $this->data['page_title']        = $this->shop_settings->shop_name;
         $this->data['page_desc']         = $this->shop_settings->description;

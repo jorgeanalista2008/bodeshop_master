@@ -1029,6 +1029,16 @@ $ps = ['0' => lang('disable'), '1' => lang('enable')];
 </div>
 <script>
     $(document).ready(function() {
+    $(document).ready(function() {
+        $('#settingsTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            localStorage.setItem('active_settings_tab', $(e.target).attr('href'));
+        });
+        var activeTab = localStorage.getItem('active_settings_tab');
+        if (activeTab && $('#settingsTabs a[href="' + activeTab + '"]').length) {
+            $('#settingsTabs a[href="' + activeTab + '"]').tab('show');
+        }
+    });
+
         $('#invoice_view').change(function(e) {
             if ($(this).val() == 2) {
                 $('#states').show();

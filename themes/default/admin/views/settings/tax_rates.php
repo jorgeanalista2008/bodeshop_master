@@ -51,6 +51,23 @@
 
                 <p class="introtext"><?php echo $this->lang->line('list_results'); ?></p>
 
+                
+                <!-- MODERN ACTION HEADER -->
+                <div class="modern-table-header">
+                    <div>
+                        <div class="modern-table-header-title">
+                            <i class="fa fa-percent text-primary"></i> <?= lang('tax_rates') ?>
+                        </div>
+                        <div class="modern-table-header-desc">
+                            Configuración de alícuotas impositivas (IVA general, reducido, exento)
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="<?= admin_url('system_settings/add_tax_rate'); ?>" data-toggle="modal" data-target="#myModal" class="btn btn-primary" style="border-radius: 6px; font-weight: 700; padding: 8px 16px;">
+                            <i class="fa fa-plus-circle" style="margin-right: 5px;"></i> <?= lang('add_tax_rate') ?>
+                        </a>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table id="CURData" class="table table-bordered table-hover table-striped reports-table">
                         <thead>

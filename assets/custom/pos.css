@@ -1,1 +1,1093 @@
-/* Custom POS Styles */
+/* ==========================================================================
+   CRISTALERIA LATINOAMERICANA - MODERN POS UI/UX DESIGN SYSTEM (pos.css)
+   Sleek, High-Contrast, Ergonomic Point-of-Sale Theme
+   Dual Currency Display (USD + BsD with live exchange rate)
+   ========================================================================== */
+
+:root {
+    --pos-bg: #f1f5f9;
+    --pos-surface: #ffffff;
+    --pos-surface-subtle: #f8fafc;
+    --pos-border: #e2e8f0;
+    --pos-border-focus: #3b82f6;
+    
+    --pos-text-main: #0f172a;
+    --pos-text-muted: #64748b;
+    --pos-text-light: #94a3b8;
+    
+    --pos-primary: #2563eb;
+    --pos-primary-hover: #1d4ed8;
+    --pos-success: #10b981;
+    --pos-success-hover: #059669;
+    --pos-warning: #f59e0b;
+    --pos-warning-hover: #d97706;
+    --pos-danger: #ef4444;
+    --pos-danger-hover: #dc2626;
+    --pos-info: #0ea5e9;
+    --pos-indigo: #6366f1;
+    
+    --pos-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --pos-shadow-md: 0 4px 12px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --pos-shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --pos-radius: 12px;
+}
+
+/* ==========================================
+   1. GLOBAL STYLES & RESET
+   ========================================== */
+html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    background-color: var(--pos-bg) !important;
+    color: var(--pos-text-main) !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#wrapper {
+    background-color: var(--pos-bg) !important;
+}
+
+#content {
+    background: transparent !important;
+    padding-top: 12px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ==========================================
+   2. TOP NAVIGATION HEADER
+   ========================================== */
+#header.navbar {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+    min-height: 52px;
+    margin-bottom: 0;
+    padding: 0 8px;
+}
+
+#header .navbar-brand {
+    padding: 12px 14px !important;
+    height: 52px;
+    display: flex;
+    align-items: center;
+}
+
+#header .navbar-brand .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#header .pos-logo-lg {
+    font-weight: 800 !important;
+    font-size: 16px !important;
+    letter-spacing: -0.3px;
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+#header .pos-logo-lg::after {
+    content: "POS";
+    margin-left: 8px;
+    display: inline-block;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+/* Header Action Buttons */
+#header .header-nav .btn {
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #e2e8f0 !important;
+    font-size: 14px !important;
+    padding: 7px 11px !important;
+    margin: 8px 3px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: none !important;
+}
+
+#header .header-nav .btn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Button color accents */
+#header .header-nav .btn.bblue {
+    border-color: rgba(56, 189, 248, 0.3) !important;
+    color: #38bdf8 !important;
+}
+#header .header-nav .btn.bblue:hover {
+    background: rgba(56, 189, 248, 0.2) !important;
+}
+
+#header .header-nav .btn.bdarkGreen {
+    border-color: rgba(52, 211, 153, 0.3) !important;
+    color: #34d399 !important;
+}
+#header .header-nav .btn.bdarkGreen:hover {
+    background: rgba(52, 211, 153, 0.2) !important;
+}
+
+#header .header-nav .btn.borange,
+#header .header-nav .btn.blightOrange {
+    border-color: rgba(251, 191, 36, 0.3) !important;
+    color: #fbbf24 !important;
+}
+#header .header-nav .btn.borange:hover,
+#header .header-nav .btn.blightOrange:hover {
+    background: rgba(251, 191, 36, 0.2) !important;
+}
+
+#header .header-nav .btn.bred {
+    border-color: rgba(248, 113, 113, 0.3) !important;
+    color: #f87171 !important;
+}
+#header .header-nav .btn.bred:hover {
+    background: rgba(248, 113, 113, 0.2) !important;
+}
+
+/* Digital Clock Badge */
+#header .header-nav .btn.bblack {
+    background: #090d16 !important;
+    border: 1px solid rgba(56, 189, 248, 0.35) !important;
+    color: #38bdf8 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    letter-spacing: 1px !important;
+    border-radius: 20px !important;
+    padding: 6px 14px !important;
+    box-shadow: inset 0 0 8px rgba(56, 189, 248, 0.15) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* User Account Dropdown */
+#header .header-nav a.account {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px;
+    padding: 5px 12px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 20px !important;
+    margin: 8px 6px !important;
+}
+
+#header .header-nav a.account .mini_avatar {
+    border: 2px solid #38bdf8 !important;
+    border-radius: 50% !important;
+    width: 28px !important;
+    height: 28px !important;
+}
+
+#header .header-nav a.account .user span {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #f1f5f9 !important;
+}
+
+#header .dropdown-menu {
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    padding: 6px !important;
+    min-width: 190px !important;
+}
+
+#header .dropdown-menu > li > a {
+    border-radius: 8px !important;
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #334155 !important;
+    transition: all 0.15s ease !important;
+}
+
+#header .dropdown-menu > li > a:hover {
+    background: #f1f5f9 !important;
+    color: var(--pos-primary) !important;
+}
+
+/* ==========================================
+   3. MAIN WORKSPACE LAYOUT
+   ========================================== */
+#pos {
+    display: flex !important;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+#pos #pos-sale-form {
+    width: 440px !important;
+    min-width: 420px !important;
+    max-width: 460px !important;
+    flex-shrink: 0;
+}
+
+#pos #leftdiv {
+    background: var(--pos-surface) !important;
+    border: 1px solid var(--pos-border) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--pos-shadow-md) !important;
+    padding: 14px !important;
+    margin: 0 !important;
+}
+
+#pos #cp {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+#pos #cp #cpinner {
+    background: var(--pos-surface) !important;
+    border: 1px solid var(--pos-border) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--pos-shadow-md) !important;
+    padding: 14px !important;
+    margin: 0 !important;
+}
+
+/* ==========================================
+   4. LEFT PANEL: CUSTOMER, WAREHOUSE & SEARCH
+   ========================================== */
+#pos #left-top .form-group {
+    margin-bottom: 8px !important;
+}
+
+/* Select2 Inputs (Customer & Warehouse) */
+.select2-container .select2-choice {
+    border: 1.5px solid var(--pos-border) !important;
+    border-radius: 10px !important;
+    height: 40px !important;
+    line-height: 38px !important;
+    background: var(--pos-surface-subtle) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: var(--pos-text-main) !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+    padding-left: 12px !important;
+}
+
+.select2-container.select2-dropdown-open .select2-choice,
+.select2-container-active .select2-choice {
+    border-color: var(--pos-primary) !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+}
+
+.select2-drop {
+    border-radius: 10px !important;
+    border: 1.5px solid var(--pos-border) !important;
+    box-shadow: var(--pos-shadow-lg) !important;
+}
+
+/* Customer Action Buttons */
+#left-top .input-group-addon {
+    background: #f1f5f9 !important;
+    border: 1.5px solid var(--pos-border) !important;
+    border-left: 0 !important;
+    border-radius: 0 10px 10px 0 !important;
+    padding: 0 8px !important;
+    vertical-align: middle;
+}
+
+#left-top .input-group-addon a {
+    color: var(--pos-text-muted) !important;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+}
+
+#left-top .input-group-addon a:hover {
+    color: var(--pos-primary) !important;
+    background: rgba(37, 99, 235, 0.1);
+}
+
+#left-top .input-group-addon a#add-customer:hover {
+    color: var(--pos-success) !important;
+    background: rgba(16, 185, 129, 0.12);
+}
+
+/* Product Search Input (#add_item) */
+#ui .form-control#add_item {
+    border: 2px solid var(--pos-border) !important;
+    border-radius: 10px !important;
+    height: 44px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    padding: 8px 14px !important;
+    background: #ffffff !important;
+    color: var(--pos-text-main) !important;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
+    transition: all 0.2s ease !important;
+}
+
+#ui .form-control#add_item:focus {
+    border-color: var(--pos-primary) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+    background: #ffffff !important;
+}
+
+#ui .input-group-addon {
+    background: var(--pos-primary) !important;
+    border: 2px solid var(--pos-primary) !important;
+    border-radius: 0 10px 10px 0 !important;
+    padding: 0 12px !important;
+    vertical-align: middle;
+}
+
+#ui .input-group-addon a#addManually {
+    color: #ffffff !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    transition: transform 0.15s ease;
+}
+
+#ui .input-group-addon a#addManually:hover {
+    transform: scale(1.1);
+}
+
+/* ==========================================
+   5. CART ITEMS TABLE (#posTable)
+   ========================================== */
+#pos #product-list {
+    border: 1px solid var(--pos-border) !important;
+    border-radius: 12px !important;
+    overflow-y: auto !important;
+    height: 380px !important;
+    background: #ffffff !important;
+    margin-bottom: 8px !important;
+}
+
+#posTable {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+#posTable thead th {
+    background: var(--pos-surface-subtle) !important;
+    color: var(--pos-text-muted) !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    padding: 10px 8px !important;
+    border-top: none !important;
+    border-bottom: 2px solid var(--pos-border) !important;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#posTable tbody tr {
+    transition: background-color 0.15s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+#posTable tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+
+#posTable tbody td {
+    padding: 8px 6px !important;
+    vertical-align: middle !important;
+    font-size: 13px !important;
+    border-top: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* Product title in cart */
+#posTable .sname {
+    font-weight: 600 !important;
+    color: var(--pos-text-main) !important;
+    line-height: 1.3 !important;
+}
+
+/* Quantity input in cart */
+#posTable .rquantity {
+    border: 1.5px solid var(--pos-border) !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+    color: var(--pos-text-main) !important;
+    padding: 4px 6px !important;
+    text-align: center !important;
+    width: 55px !important;
+    transition: all 0.2s ease !important;
+}
+
+#posTable .rquantity:focus {
+    border-color: var(--pos-primary) !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+    outline: none !important;
+}
+
+/* Subtotal text in cart */
+#posTable td.text-right {
+    font-weight: 700 !important;
+    color: #1e293b !important;
+}
+
+/* Delete trash icon */
+#posTable .posdel {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    color: #94a3b8 !important;
+    transition: all 0.2s ease;
+}
+
+#posTable .posdel:hover {
+    color: var(--pos-danger) !important;
+    background: #fee2e2 !important;
+    transform: scale(1.1);
+}
+
+/* ==========================================
+   6. TOTALS & DUAL CURRENCY SUMMARY CARD
+   ========================================== */
+#totalTable {
+    width: 100% !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    border: 1px solid var(--pos-border) !important;
+    background: #ffffff !important;
+    box-shadow: var(--pos-shadow-sm) !important;
+    margin-bottom: 10px !important;
+}
+
+#totalTable td {
+    padding: 7px 12px !important;
+    font-size: 13px !important;
+}
+
+/* Normal summary rows */
+#totalTable tr:first-child td {
+    border-top: none !important;
+    color: var(--pos-text-muted) !important;
+    font-weight: 600;
+}
+
+#totalTable #titems, #totalTable #total {
+    font-weight: 700 !important;
+    color: var(--pos-text-main) !important;
+}
+
+#totalTable a#pptax2, #totalTable a#ppdiscount {
+    color: var(--pos-primary) !important;
+    margin-left: 4px;
+}
+
+/* Grand Total USD Row */
+#totalTable tr:nth-child(3) td {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+    color: #ffffff !important;
+    border-top: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    font-weight: 700 !important;
+    padding: 10px 14px !important;
+}
+
+#totalTable #gtotal {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    color: #38bdf8 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
+/* Grand Total BsD (Bolívares) Row */
+#totalTable tr:nth-child(4) td {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%) !important;
+    color: #ecfdf5 !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    font-weight: 700 !important;
+    padding: 10px 14px !important;
+}
+
+#totalTable #gtotal_bsd {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    color: #34d399 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
+#totalTable #global_change_rate {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 7px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #a7f3d0;
+}
+
+/* ==========================================
+   7. ACTION BUTTONS BAR (#botbuttons)
+   ========================================== */
+#botbuttons {
+    padding: 0 !important;
+}
+
+#botbuttons .btn {
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    border: none !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Suspend (Amber) */
+#botbuttons #suspend {
+    background: var(--pos-warning) !important;
+    color: #ffffff !important;
+    border-radius: 10px 0 0 0 !important;
+    height: 35px !important;
+}
+#botbuttons #suspend:hover {
+    background: var(--pos-warning-hover) !important;
+}
+
+/* Reset / Cancel (Red) */
+#botbuttons #reset {
+    background: var(--pos-danger) !important;
+    color: #ffffff !important;
+    border-radius: 0 0 0 10px !important;
+    height: 35px !important;
+}
+#botbuttons #reset:hover {
+    background: var(--pos-danger-hover) !important;
+}
+
+/* Print Order (Cyan) */
+#botbuttons #print_order {
+    background: var(--pos-info) !important;
+    color: #ffffff !important;
+    border-radius: 0 !important;
+    height: 35px !important;
+}
+#botbuttons #print_order:hover {
+    background: #0284c7 !important;
+}
+
+/* Print Bill (Indigo) */
+#botbuttons #print_bill {
+    background: var(--pos-indigo) !important;
+    color: #ffffff !important;
+    border-radius: 0 !important;
+    height: 35px !important;
+}
+#botbuttons #print_bill:hover {
+    background: #4f46e5 !important;
+}
+
+/* COBRAR / PAYMENT (Emerald Green High-Impact CTA) */
+#botbuttons #payment {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: #ffffff !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    border-radius: 0 10px 10px 0 !important;
+    height: 70px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45) !important;
+    letter-spacing: 0.6px !important;
+}
+
+#botbuttons #payment:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6) !important;
+    transform: translateY(-1px);
+}
+
+#botbuttons #payment i {
+    font-size: 18px !important;
+    margin-right: 8px !important;
+}
+
+/* ==========================================
+   8. RIGHT PANEL: PRODUCT CATALOG GRID
+   ========================================== */
+#pos #cp #item-list {
+    overflow-y: auto !important;
+    height: 520px !important;
+    padding: 6px 2px !important;
+}
+
+/* Modern Product Card Button */
+#pos button.btn-prni.product {
+    width: calc(20% - 10px) !important;
+    min-width: 120px !important;
+    max-width: 155px !important;
+    height: 155px !important;
+    margin: 5px !important;
+    padding: 8px !important;
+    background: #ffffff !important;
+    border: 1.5px solid var(--pos-border) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--pos-shadow-sm) !important;
+    display: inline-flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    position: relative !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    overflow: hidden !important;
+    vertical-align: top !important;
+    outline: none !important;
+}
+
+#pos button.btn-prni.product:hover {
+    border-color: var(--pos-primary) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.18) !important;
+    background: #ffffff !important;
+}
+
+#pos button.btn-prni.product:active {
+    transform: scale(0.97) !important;
+}
+
+/* Product Card Image */
+#pos button.btn-prni.product img {
+    width: 100% !important;
+    height: 85px !important;
+    max-height: 85px !important;
+    object-fit: contain !important;
+    border-radius: 8px !important;
+    background: var(--pos-surface-subtle) !important;
+    padding: 4px !important;
+    margin-bottom: 6px !important;
+    border: 1px solid #f1f5f9 !important;
+}
+
+/* Product Card Title */
+#pos button.btn-prni.product span {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 38px !important;
+    line-height: 1.25 !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    color: var(--pos-text-main) !important;
+    text-transform: none !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 2px !important;
+}
+
+/* Product Grid Pagination Nav */
+.pos-grid-nav {
+    margin-top: 10px !important;
+    gap: 8px !important;
+    display: flex !important;
+}
+
+.pos-grid-nav .btn-group {
+    flex: 1;
+}
+
+.pos-grid-nav .btn {
+    border-radius: 10px !important;
+    height: 42px !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.pos-grid-nav #previous,
+.pos-grid-nav #next {
+    background: var(--pos-surface-subtle) !important;
+    border: 1.5px solid var(--pos-border) !important;
+    color: var(--pos-text-main) !important;
+}
+
+.pos-grid-nav #previous:hover,
+.pos-grid-nav #next:hover {
+    background: var(--pos-primary) !important;
+    border-color: var(--pos-primary) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
+}
+
+.pos-grid-nav #sellGiftCard {
+    background: #f1f5f9 !important;
+    border: 1.5px solid var(--pos-border) !important;
+    color: var(--pos-text-muted) !important;
+}
+
+.pos-grid-nav #sellGiftCard:hover {
+    background: var(--pos-indigo) !important;
+    border-color: var(--pos-indigo) !important;
+    color: #ffffff !important;
+}
+
+/* ==========================================
+   9. CATEGORIES / BRANDS SIDE TABS & DRAWERS
+   ========================================== */
+.rotate.btn-cat-con {
+    position: fixed !important;
+    right: -130px !important;
+    top: 45% !important;
+    z-index: 1000 !important;
+    gap: 4px;
+}
+
+.rotate.btn-cat-con .btn {
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 8px 16px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    border: none !important;
+}
+
+#category-slider,
+#subcategory-slider,
+#brands-slider {
+    border-radius: 16px 0 0 16px !important;
+    border: 1px solid var(--pos-border) !important;
+    box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15) !important;
+    background: #ffffff !important;
+    padding: 16px !important;
+}
+
+#category-list .btn-prni,
+#subcategory-list .btn-prni,
+#brands-list .btn-prni {
+    border: 1.5px solid var(--pos-border) !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+    margin: 4px !important;
+    transition: all 0.2s ease !important;
+}
+
+#category-list .btn-prni:hover,
+#subcategory-list .btn-prni:hover,
+#brands-list .btn-prni:hover {
+    border-color: var(--pos-primary) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--pos-shadow-md) !important;
+}
+
+/* ==========================================
+   10. PAYMENT MODAL (#paymentModal)
+   ========================================== */
+#paymentModal .modal-content {
+    border-radius: 20px !important;
+    border: none !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    overflow: hidden !important;
+}
+
+#paymentModal .modal-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+    color: #ffffff !important;
+    padding: 18px 24px !important;
+    border-bottom: none !important;
+}
+
+#paymentModal .modal-title {
+    font-weight: 800 !important;
+    font-size: 18px !important;
+    color: #ffffff !important;
+    letter-spacing: -0.3px;
+}
+
+#paymentModal .modal-header .close {
+    color: #ffffff !important;
+    opacity: 0.8 !important;
+    text-shadow: none !important;
+}
+
+#paymentModal .modal-header .close:hover {
+    opacity: 1 !important;
+}
+
+#paymentModal .modal-body {
+    padding: 24px !important;
+    background: #ffffff !important;
+}
+
+#paymentModal .well.well_1 {
+    background: var(--pos-surface-subtle) !important;
+    border: 1.5px solid var(--pos-border) !important;
+    border-radius: 14px !important;
+    padding: 16px !important;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.02) !important;
+}
+
+/* Payment Inputs */
+#paymentModal .amount {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: var(--pos-text-main) !important;
+    height: 48px !important;
+    border-radius: 10px !important;
+    border: 2px solid var(--pos-border) !important;
+    text-align: right !important;
+    font-family: ui-monospace, SFMono-Regular, monospace !important;
+    background: #ffffff !important;
+}
+
+#paymentModal .amount:focus {
+    border-color: var(--pos-success) !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+}
+
+#paymentModal .paid_by {
+    height: 48px !important;
+    border-radius: 10px !important;
+    border: 2px solid var(--pos-border) !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Quick Cash Buttons */
+#paymentModal .quick-cash {
+    border-radius: 10px !important;
+    font-weight: 800 !important;
+    font-size: 15px !important;
+    margin-bottom: 6px !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1.5px solid var(--pos-border) !important;
+    background: #ffffff !important;
+    color: var(--pos-text-main) !important;
+    transition: all 0.15s ease !important;
+    box-shadow: var(--pos-shadow-sm) !important;
+}
+
+#paymentModal .quick-cash:hover {
+    background: #e0f2fe !important;
+    color: #0284c7 !important;
+    border-color: #38bdf8 !important;
+    transform: scale(1.03);
+}
+
+#paymentModal #quick-payable {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+#paymentModal #clear-cash-notes {
+    border-radius: 10px !important;
+    background: #fee2e2 !important;
+    color: #dc2626 !important;
+    border: 1px solid #fecaca !important;
+    font-weight: 700 !important;
+    height: 44px !important;
+}
+
+#paymentModal #clear-cash-notes:hover {
+    background: #fecaca !important;
+}
+
+/* Payment Summary Table inside Modal */
+#paymentModal .font16 table {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    border: 1.5px solid var(--pos-border) !important;
+}
+
+#paymentModal .font16 table td {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+
+#paymentModal #twt {
+    color: var(--pos-text-main) !important;
+    font-weight: 800 !important;
+    font-size: 18px !important;
+}
+
+#paymentModal #total_paying {
+    color: var(--pos-success) !important;
+    font-weight: 800 !important;
+    font-size: 18px !important;
+}
+
+#paymentModal #balance {
+    color: var(--pos-primary) !important;
+    font-weight: 800 !important;
+    font-size: 18px !important;
+}
+
+/* Final Submit Button */
+#paymentModal #submit-sale {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 14px !important;
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+    transition: all 0.2s ease !important;
+}
+
+#paymentModal #submit-sale:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+    box-shadow: 0 6px 22px rgba(16, 185, 129, 0.55) !important;
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================================================
+   11. MODERN TOAST ALERTS & NOTIFICATIONS (AUTO-DISMISS)
+   ========================================================================== */
+.alert {
+    position: fixed !important;
+    top: 65px !important;
+    right: 20px !important;
+    width: auto !important;
+    min-width: 300px !important;
+    max-width: 440px !important;
+    z-index: 999999 !important;
+    border-radius: 12px !important;
+    padding: 14px 40px 14px 16px !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    border: 1px solid transparent !important;
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    overflow: hidden !important;
+    display: block !important;
+}
+
+@keyframes toastSlideIn {
+    from {
+        transform: translateX(40px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.alert.alert-fade-out {
+    animation: toastSlideOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+
+@keyframes toastSlideOut {
+    from {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(50px) scale(0.95);
+        opacity: 0;
+    }
+}
+
+.alert.alert-success {
+    background-color: #ecfdf5 !important;
+    border-color: #a7f3d0 !important;
+    color: #065f46 !important;
+}
+
+.alert.alert-danger {
+    background-color: #fef2f2 !important;
+    border-color: #fecaca !important;
+    color: #991b1b !important;
+}
+
+.alert.alert-warning {
+    background-color: #fffbeb !important;
+    border-color: #fde68a !important;
+    color: #92400e !important;
+}
+
+.alert.alert-info {
+    background-color: #f0f9ff !important;
+    border-color: #bae6fd !important;
+    color: #075985 !important;
+}
+
+.alert .close {
+    position: absolute !important;
+    top: 10px !important;
+    right: 12px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: inherit !important;
+    opacity: 0.55 !important;
+    text-shadow: none !important;
+    transition: opacity 0.2s ease !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+}
+
+.alert .close:hover {
+    opacity: 1 !important;
+}
+
+.alert .alert-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: currentColor;
+    opacity: 0.3;
+    border-radius: 0 0 12px 12px;
+}

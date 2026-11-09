@@ -346,12 +346,20 @@ class Pos extends MY_Controller
             admin_redirect('welcome');
         } else {
             if ($this->Owner || $this->Admin) {
-                $user_register                    = $user_id ? $this->pos_model->registerData($user_id) : null;
+                $user_register = $user_id ? $this->pos_model->registerData($user_id) : $this->pos_model->registerData($this->session->userdata('user_id'));
+                if (!$user_register) {
+                    $this->session->set_flashdata('error', lang('register_not_open'));
+                    admin_redirect('pos');
+                }
                 $register_open_time               = $user_register ? $user_register->date : null;
                 $this->data['cash_in_hand']       = $user_register ? $user_register->cash_in_hand : null;
                 $this->data['register_open_time'] = $user_register ? $register_open_time : null;
             } else {
                 $register_open_time               = $this->session->userdata('register_open_time');
+                if (!$register_open_time) {
+                    $this->session->set_flashdata('error', lang('register_not_open'));
+                    admin_redirect('pos');
+                }
                 $this->data['cash_in_hand']       = null;
                 $this->data['register_open_time'] = null;
             }
@@ -1210,9 +1218,11 @@ class Pos extends MY_Controller
     public function open_drawer()
     {
         $data = json_decode($this->input->get('data'));
-        $this->load->library('escpos');
-        $this->escpos->load($data->printer);
-        $this->escpos->open_drawer();
+        if (!empty($data) && !empty($data->printer)) {
+            $this->load->library('escpos');
+            $this->escpos->load($data->printer);
+            $this->escpos->open_drawer();
+        }
     }
 
     public function open_register()
@@ -1297,9 +1307,11 @@ class Pos extends MY_Controller
     public function p()
     {
         $data = json_decode($this->input->get('data'));
-        $this->load->library('escpos');
-        $this->escpos->load($data->printer);
-        $this->escpos->print_receipt($data);
+        if (!empty($data) && !empty($data->printer)) {
+            $this->load->library('escpos');
+            $this->escpos->load($data->printer);
+            $this->escpos->print_receipt($data);
+        }
     }
 
     public function paypal_balance()

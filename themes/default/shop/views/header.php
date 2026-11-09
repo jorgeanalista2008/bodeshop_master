@@ -5,12 +5,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript">if (parent.frames.length !== 0) { top.location = '<?= site_url(); ?>'; }</script>
+    <script type="text/javascript">
+        (function() {
+            try {
+                var themeMode = localStorage.getItem('shop_theme_mode');
+                if (themeMode === 'dark') {
+                    document.documentElement.classList.add('theme-dark');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.classList.add('theme-light');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (e) {}
+        })();
+    </script>
     <title><?= $page_title; ?></title>
     <meta name="description" content="<?= $page_desc; ?>">
     <link rel="shortcut icon" href="<?= $assets; ?>images/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="<?= $assets; ?>css/libs.min.css" rel="stylesheet">
     <link href="<?= $assets; ?>css/styles.min.css" rel="stylesheet">
-    <link href="<?= base_url('assets/custom/shop.css') ?>" rel="stylesheet"/>
+    <link href="<?= base_url('assets/custom/shop.css?v=3.1') ?>" rel="stylesheet"/>
     <meta property="og:url" content="<?= isset($product) && !empty($product) ? site_url('product/' . $product->slug) : site_url(); ?>" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="<?= $page_title; ?>" />
@@ -43,6 +60,13 @@
                                 }
                                 ?>
                                 <?= $loggedIn && $Staff ? '<li class="hidden-xs"><a href="' . admin_url() . '"><i class="fa fa-dashboard"></i> ' . lang('admin_area') . '</a></li>' : ''; ?>
+                                <li>
+                                    <button type="button" class="topbar-theme-toggle" id="topbarThemeToggle" title="Cambiar tema Luz / Dark" aria-label="Cambiar tema">
+                                        <i class="fa fa-moon-o theme-icon-moon"></i>
+                                        <i class="fa fa-sun-o theme-icon-sun"></i>
+                                        <span class="theme-mode-text hidden-xs">Tema</span>
+                                    </button>
+                                </li>
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                     <img src="<?= base_url('assets/images/' . $Settings->user_language . '.png'); ?>" alt="">

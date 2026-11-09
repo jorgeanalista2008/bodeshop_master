@@ -77,6 +77,10 @@ class Promos extends MY_Controller
         }
 
         $promo = $this->promos_model->getPromoByID($id);
+        if (!$promo) {
+            $this->session->set_flashdata('error', lang('promo_not_found'));
+            admin_redirect('promos');
+        }
         $this->form_validation->set_rules('name', $this->lang->line('name'), 'required');
         $this->form_validation->set_rules('product2buy', $this->lang->line('product2buy'), 'required');
         $this->form_validation->set_rules('product2get', $this->lang->line('product2get'), 'required');
@@ -92,7 +96,7 @@ class Promos extends MY_Controller
             ];
         } elseif ($this->input->post('edit_promo')) {
             $this->session->set_flashdata('error', validation_errors());
-            admin_redirect('promos/edit/' + $id);
+            admin_redirect('promos/edit/' . $id);
         }
 
         if ($this->form_validation->run() == true && $this->promos_model->updatePromo($id, $data)) {

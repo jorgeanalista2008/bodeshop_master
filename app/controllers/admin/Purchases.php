@@ -2034,7 +2034,11 @@ class Purchases extends MY_Controller
             $id = $this->input->get('id');
         }
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
-        $inv                 = $this->purchases_model->getReturnByID($id);
+        $inv = $id ? $this->purchases_model->getReturnByID($id) : null;
+        if (!$inv) {
+            $this->session->set_flashdata('error', lang('return_not_found'));
+            admin_redirect('purchases');
+        }
         if (!$this->session->userdata('view_right')) {
             $this->sma->view_rights($inv->created_by);
         }

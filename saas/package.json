@@ -1,0 +1,13 @@
+{
+  "name": "bodeshop-saas-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BodeShop Master SaaS Monorepo Scripts",
+  "scripts": {
+    "dev": "dev.bat",
+    "dev:ps1": "powershell -ExecutionPolicy Bypass -File dev.ps1",
+    "build:api": "cd apps/api && npm run build",
+    "build:web": "cd apps/web && npm run build",
+    "build": "npm run build:api && npm run build:web"
+  }
+}

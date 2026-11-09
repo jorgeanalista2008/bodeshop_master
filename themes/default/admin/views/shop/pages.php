@@ -56,7 +56,24 @@
         <div class="row">
             <div class="col-lg-12">
 
-                <p class="introtext"><?= lang('list_results'); ?></p>
+                
+                <!-- MODERN ACTION HEADER -->
+                <div class="modern-table-header">
+                    <div>
+                        <div class="modern-table-header-title">
+                            <i class="fa fa-file-text-o text-primary"></i> <?= lang('pages') ?>
+                        </div>
+                        <div class="modern-table-header-desc">
+                            Páginas de contenido institucional para la tienda en línea
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="<?= admin_url('shop_settings/add_page'); ?>"  class="btn btn-primary" style="border-radius: 6px; font-weight: 700; padding: 8px 16px;">
+                            <i class="fa fa-plus-circle" style="margin-right: 5px;"></i> <?= lang('add_page') ?>
+                        </a>
+                    </div>
+                </div>
+
 
                 <div class="table-responsive">
                     <table id="PgData" class="table table-bordered table-hover table-striped">

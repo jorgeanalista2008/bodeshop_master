@@ -14,7 +14,23 @@
                 });
                 $.ajax({'dataType': 'json', 'type': 'POST', 'url': sSource, 'data': aoData, 'success': fnCallback});
             },
-            "aoColumns": [{
+            
+            "fnDrawCallback": function (oSettings) {
+                var total = oSettings.fnRecordsTotal();
+                $("#kpi_total_billers").text(total);
+                var rows = oSettings.aoData;
+                var phoneCount = 0, emailCount = 0, companyCount = 0;
+                for (var i = 0; i < rows.length; i++) {
+                    var d = rows[i]._aData;
+                    if (d[4] && d[4].trim() != "" && d[4].trim() != "-") phoneCount++;
+                    if (d[5] && d[5].trim() != "" && d[5].trim() != "-") emailCount++;
+                    if (d[1] && d[1].trim() != "" && d[1].trim() != "-") companyCount++;
+                }
+                $("#kpi_phone_billers").text(phoneCount);
+                $("#kpi_email_billers").text(emailCount);
+                $("#kpi_companies_billers").text(companyCount);
+            },
+    "aoColumns": [{
                 "bSortable": false,
                 "mRender": checkbox
             }, null, null, null, null, null, null, null, {"bSortable": false}]
@@ -54,7 +70,68 @@
         <div class="row">
             <div class="col-lg-12">
 
-                <p class="introtext"><?= lang('list_results'); ?></p>
+                
+                <!-- KPI METRIC CARDS -->
+                <div class="row" style="margin-bottom: 22px;">
+                    <div class="col-md-3 col-sm-6">
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 48px; height: 48px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">
+                                <i class="fa fa-briefcase"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Total Facturadores</div>
+                                <div style="font-size: 22px; font-weight: 800; color: #0f172a;" id="kpi_total_billers">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 48px; height: 48px; border-radius: 10px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Con Teléfono</div>
+                                <div style="font-size: 22px; font-weight: 800; color: #059669;" id="kpi_phone_billers">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 48px; height: 48px; border-radius: 10px; background: #eef2ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">
+                                <i class="fa fa-envelope"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Con Email</div>
+                                <div style="font-size: 22px; font-weight: 800; color: #4f46e5;" id="kpi_email_billers">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 48px; height: 48px; border-radius: 10px; background: #fff7ed; color: #ea580c; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">
+                                <i class="fa fa-building"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Empresas Activas</div>
+                                <div style="font-size: 22px; font-weight: 800; color: #ea580c;" id="kpi_companies_billers">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTIONS BAR -->
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <span style="font-weight: 700; color: #0f172a; font-size: 15px;"><i class="fa fa-list text-primary" style="margin-right: 6px;"></i> Directorio de Facturadores</span>
+                        <span class="text-muted" style="font-size: 13px; margin-left: 10px;">Administre las entidades emisoras de facturas y puntos de venta</span>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="<?= admin_url('billers/add'); ?>" data-toggle="modal" data-target="#myModal" class="btn btn-primary" style="border-radius: 6px; font-weight: 700; padding: 8px 16px;">
+                            <i class="fa fa-plus-circle" style="margin-right: 5px;"></i> <?= lang('add_biller'); ?>
+                        </a>
+                    </div>
+                </div>
+
 
                 <div class="table-responsive">
                     <table id="SupData" cellpadding="0" cellspacing="0" border="0"

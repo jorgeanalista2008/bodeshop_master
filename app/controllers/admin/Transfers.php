@@ -260,6 +260,10 @@ class Transfers extends MY_Controller
             $id = $this->input->get('id');
         }
         $transfer = $this->transfers_model->getTransferByID($id);
+        if (!$transfer) {
+            $this->session->set_flashdata('error', lang('transfer_not_found'));
+            admin_redirect('transfers');
+        }
         if (!$this->session->userdata('edit_right')) {
             $this->sma->view_rights($transfer->created_by);
         }
@@ -415,8 +419,16 @@ class Transfers extends MY_Controller
         } else {
             $this->data['error']    = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
             $this->data['transfer'] = $this->transfers_model->getTransferByID($id);
+            if (!$this->data['transfer']) {
+                $this->session->set_flashdata('error', lang('transfer_not_found'));
+                admin_redirect('transfers');
+            }
             $transfer_items         = $this->transfers_model->getAllTransferItems($id, $this->data['transfer']->status);
-            krsort($transfer_items);
+            if (!empty($transfer_items)) {
+                krsort($transfer_items);
+            } else {
+                $transfer_items = [];
+            }
             $c = rand(100000, 9999999);
             foreach ($transfer_items as $item) {
                 $row = $this->site->getProductByID($item->product_id);

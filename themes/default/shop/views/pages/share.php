@@ -1,4 +1,4 @@
-<div class="row">
+﻿<div class="row">
     <div class="col-xs-12">
         <p style="font-size:1.1em;font-weight:bold;"><?= lang('share_message'); ?></p>
         <ul class="rrssb-buttons clearfix">

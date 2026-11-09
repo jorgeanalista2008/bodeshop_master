@@ -607,7 +607,7 @@ $(document).ready(function () {
         var iname = $(this).attr('name');
         var iid = '#' + id;
         if (!!$(this).attr('data-bv-notempty') || !!$(this).attr('required')) {
-            $("label[for='" + id + "']").append(' *');
+            var $lbl = $("label[for='" + id + "']"); if ($lbl.length && $lbl.html().indexOf('*') === -1) { $lbl.append(' *'); }
             $(document).on('change', iid, function () {
                 $('form[data-toggle="validator"]').bootstrapValidator('revalidateField', iname);
             });
@@ -1468,33 +1468,13 @@ $(document).ready(function () {
 
 function fixAddItemnTotals() {
     var ai = $('#sticker');
-    var aiTop = ai.position().top + 250;
     var bt = $('#bottom-total');
-    $(window).scroll(function () {
-        var windowpos = $(window).scrollTop();
-        if (windowpos >= aiTop) {
-            ai.addClass('stick').css('width', ai.parent('form').width()).css('zIndex', 2);
-            if ($.cookie('sma_theme_fixed') == 'yes') {
-                ai.css('top', '40px');
-            } else {
-                ai.css('top', 0);
-            }
-            $('#add_item').removeClass('input-lg');
-            $('.addIcon').removeClass('fa-2x');
-        } else {
-            ai.removeClass('stick').css('width', bt.parent('form').width()).css('zIndex', 2);
-            if ($.cookie('sma_theme_fixed') == 'yes') {
-                ai.css('top', 0);
-            }
-            $('#add_item').addClass('input-lg');
-            $('.addIcon').addClass('fa-2x');
-        }
-        if (windowpos <= $(document).height() - $(window).height() - 120) {
-            bt.css('position', 'fixed').css('bottom', 0).css('width', bt.parent('form').width()).css('zIndex', 2);
-        } else {
-            bt.css('position', 'static').css('width', ai.parent('form').width()).css('zIndex', 2);
-        }
-    });
+    if (ai.length) {
+        ai.removeClass('stick').css({'position': 'static', 'width': '100%'});
+    }
+    if (bt.length) {
+        bt.css({'position': 'static', 'width': '100%'});
+    }
 }
 
 function ItemnTotals() {

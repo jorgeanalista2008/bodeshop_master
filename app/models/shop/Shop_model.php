@@ -235,6 +235,38 @@ class Shop_model extends CI_Model
         return $this->db->get('products')->result();
     }
 
+    public function getTopShowcaseProducts($limit = 12)
+    {
+        $featured = $this->getFeaturedProducts($limit);
+        if (count($featured) >= $limit) {
+            return $featured;
+        }
+
+        $existing_ids = !empty($featured) ? array_map(function($p) { return $p->id; }, $featured) : [0];
+        $needed = $limit - count($featured);
+        $p_table = $this->db->dbprefix('products');
+
+        $this->db->select("{$p_table}.id as id, {$p_table}.name as name, {$p_table}.code as code, {$p_table}.image as image, {$p_table}.slug as slug, {$p_table}.price, quantity, type, promotion, promo_price, start_date, end_date, b.name as brand_name, b.slug as brand_slug, c.name as category_name, c.slug as category_slug")
+        ->join('brands b', "{$p_table}.brand=b.id", 'left')
+        ->join('categories c', "{$p_table}.category_id=c.id", 'left')
+        ->where("{$p_table}.hide !=", 1)
+        ->where_not_in("{$p_table}.id", $existing_ids)
+        ->where("{$p_table}.price >", 0)
+        ->order_by("({$p_table}.image != 'no_image.png' AND {$p_table}.image != '' AND {$p_table}.image IS NOT NULL) DESC", false)
+        ->order_by("{$p_table}.id DESC", false)
+        ->limit($needed);
+
+        $sp = $this->getSpecialPrice();
+        if ($sp->cgp) {
+            $this->db->select('cgp.price as special_price', false)->join($sp->cgp, "{$p_table}.id=cgp.product_id", 'left');
+        } elseif ($sp->wgp) {
+            $this->db->select('wgp.price as special_price', false)->join($sp->wgp, "{$p_table}.id=wgp.product_id", 'left');
+        }
+
+        $more = $this->db->get('products')->result();
+        return array_merge($featured, $more);
+    }
+
     public function getNotifications()
     {
         $date = date('Y-m-d H:i:s', time());
@@ -642,5 +674,51 @@ class Shop_model extends CI_Model
     {
         $views = is_numeric($views) ? ($views + 1) : 1;
         return $this->db->update('products', ['views' => $views], ['id' => $id]);
+    }
+
+    public function getCategoryProducts($category_id, $limit = 8)
+    {
+        $this->db->select("{$this->db->dbprefix('products')}.id as id, {$this->db->dbprefix('products')}.name as name, {$this->db->dbprefix('products')}.code as code, {$this->db->dbprefix('products')}.image as image, {$this->db->dbprefix('products')}.slug as slug, {$this->db->dbprefix('products')}.price, quantity, type, promotion, promo_price, start_date, end_date, b.name as brand_name, b.slug as brand_slug, c.name as category_name, c.slug as category_slug")
+        ->join('brands b', 'products.brand=b.id', 'left')
+        ->join('categories c', 'products.category_id=c.id', 'left')
+        ->where('products.category_id', $category_id)
+        ->where('products.hide !=', 1)
+        ->order_by('products.id', 'desc')
+        ->limit($limit);
+
+        $sp = $this->getSpecialPrice();
+        if ($sp->cgp) {
+            $this->db->select('cgp.price as special_price', false)->join($sp->cgp, 'products.id=cgp.product_id', 'left');
+        } elseif ($sp->wgp) {
+            $this->db->select('wgp.price as special_price', false)->join($sp->wgp, 'products.id=wgp.product_id', 'left');
+        }
+        $q = $this->db->get('products');
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return [];
+    }
+
+    public function getPromotionalProducts($limit = 8)
+    {
+        $this->db->select("{$this->db->dbprefix('products')}.id as id, {$this->db->dbprefix('products')}.name as name, {$this->db->dbprefix('products')}.code as code, {$this->db->dbprefix('products')}.image as image, {$this->db->dbprefix('products')}.slug as slug, {$this->db->dbprefix('products')}.price, quantity, type, promotion, promo_price, start_date, end_date, b.name as brand_name, b.slug as brand_slug, c.name as category_name, c.slug as category_slug")
+        ->join('brands b', 'products.brand=b.id', 'left')
+        ->join('categories c', 'products.category_id=c.id', 'left')
+        ->where('products.promotion', 1)
+        ->where('products.hide !=', 1)
+        ->order_by('products.id', 'desc')
+        ->limit($limit);
+
+        $sp = $this->getSpecialPrice();
+        if ($sp->cgp) {
+            $this->db->select('cgp.price as special_price', false)->join($sp->cgp, 'products.id=cgp.product_id', 'left');
+        } elseif ($sp->wgp) {
+            $this->db->select('wgp.price as special_price', false)->join($sp->wgp, 'products.id=wgp.product_id', 'left');
+        }
+        $q = $this->db->get('products');
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return [];
     }
 }

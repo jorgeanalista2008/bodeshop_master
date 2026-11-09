@@ -72,41 +72,17 @@
             <div class="copyright line-height-lg">
                 &copy; <?= date('Y'); ?> <?= $shop_settings->shop_name; ?>. <?= lang('all_rights_reserved'); ?>
             </div>
-            <ul class="list-inline pull-right line-height-md">
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-blue" data-color="blue"><i class="fa fa-square"></i></a>
-                </li>
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-blue-grey" data-color="blue-grey"><i class="fa fa-square"></i></a>
-                </li>
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-brown" data-color="brown"><i class="fa fa-square"></i></a>
-                </li>
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-cyan" data-color="cyan"><i class="fa fa-square"></i></a>
-                </li>
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-green" data-color="green"><i class="fa fa-square"></i></a>
-                </li>
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-grey" data-color="grey"><i class="fa fa-square"></i></a>
-                </li>
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-purple" data-color="purple"><i class="fa fa-square"></i></a>
-                </li>
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-orange" data-color="orange"><i class="fa fa-square"></i></a>
-                </li>
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-pink" data-color="pink"><i class="fa fa-square"></i></a>
-                </li>
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-red" data-color="red"><i class="fa fa-square"></i></a>
-                </li>
-                <li class="padding-x-no text-size-lg">
-                    <a href="#" class="theme-color text-teal" data-color="teal"><i class="fa fa-square"></i></a>
-                </li>
-            </ul>
+            <div class="theme-mode-wrapper pull-right">
+                <span class="theme-mode-label hidden-xs"><i class="fa fa-adjust"></i> Modo:</span>
+                <div class="theme-mode-pill" role="group" aria-label="Selector de Modo">
+                    <button type="button" class="btn-mode-toggle active" data-theme-val="light" id="btnModeLight" title="Modo Luz">
+                        <i class="fa fa-sun-o"></i> <span>Luz</span>
+                    </button>
+                    <button type="button" class="btn-mode-toggle" data-theme-val="dark" id="btnModeDark" title="Modo Dark">
+                        <i class="fa fa-moon-o"></i> <span>Dark</span>
+                    </button>
+                </div>
+            </div>
             <div class="clearfix"></div>
         </div>
     </div>
@@ -115,6 +91,34 @@
 <a href="#" class="back-to-top text-center" onclick="$('body,html').animate({scrollTop:0},500); return false">
     <i class="fa fa-angle-double-up"></i>
 </a>
+
+<!-- ================= MOBILE APP-LIKE BOTTOM NAVIGATION BAR ================= -->
+<nav class="mobile-bottom-nav visible-xs">
+    <a href="<?= base_url(); ?>" class="mobile-nav-item <?= ($m == 'main' && $v == 'index') ? 'active' : ''; ?>">
+        <i class="fa fa-home"></i>
+        <span>Inicio</span>
+    </a>
+    <a href="<?= shop_url('products'); ?>" class="mobile-nav-item <?= ($m == 'shop' && $v == 'products') ? 'active' : ''; ?>">
+        <i class="fa fa-th-large"></i>
+        <span>Catálogo</span>
+    </a>
+    <a href="#" class="mobile-nav-item" onclick="$('#product-search').focus(); $('html, body').animate({scrollTop: $('#product-search').offset().top - 80}, 300); return false;">
+        <i class="fa fa-search"></i>
+        <span>Buscar</span>
+    </a>
+    <a href="<?= site_url('cart'); ?>" class="mobile-nav-item">
+        <div class="mobile-cart-badge-wrap">
+            <i class="fa fa-shopping-cart"></i>
+            <span class="cart-total-items mobile-badge"></span>
+        </div>
+        <span>Carrito</span>
+    </a>
+    <a href="<?= $loggedIn ? site_url('profile') : site_url('login'); ?>" class="mobile-nav-item">
+        <i class="fa fa-user"></i>
+        <span><?= $loggedIn ? 'Cuenta' : 'Ingresar'; ?></span>
+    </a>
+</nav>
+
 </section>
 <?php if (!get_cookie('shop_use_cookie') && get_cookie('shop_use_cookie') != 'accepted' && !empty($shop_settings->cookie_message)) {
         ?>
@@ -238,7 +242,7 @@ $(document).ready(function() {
 <?php
     } ?>
 </script>
-<script type="text/javascript" src="<?= base_url('assets/custom/shop.js') ?>"></script>
+<script type="text/javascript" src="<?= base_url('assets/custom/shop.js?v=1.2') ?>"></script>
 <!-- <script>
     if(!get('shop_grid')) {
         store('shop_grid', '.three-col');

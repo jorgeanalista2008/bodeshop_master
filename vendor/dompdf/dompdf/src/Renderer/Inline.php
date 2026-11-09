@@ -51,13 +51,15 @@ class Inline extends AbstractRenderer
 
         foreach ($frame->get_children() as $child) {
             list($child_x, $child_y, $child_w, $child_h) = $child->get_padding_box();
+            $child_w = (float)$child_w;
+            $child_h = (float)$child_h;
 
             if (is_null($w)) {
                 $w = (float)$child_w;
             } else {
                 $w += (float)$child_w;
             }
-            $h = max($h, $child_h);
+            $h = max((float)$h, $child_h);
 
             if ($DEBUGLAYOUTINLINE) {
                 $this->_debug_layout($child->get_border_box(), "blue");
@@ -89,8 +91,8 @@ class Inline extends AbstractRenderer
         }
 
         // Add the border widths
-        $w += (float)$widths[1] + (float)$widths[3];
-        $h += (float)$widths[0] + (float)$widths[2];
+        $w = (float)$w + (float)$widths[1] + (float)$widths[3];
+        $h = (float)$h + (float)$widths[0] + (float)$widths[2];
 
         // If this is the first row, draw the left border too
         if ($bp["left"]["style"] !== "none" && $bp["left"]["color"] !== "transparent" && $widths[3] > 0) {

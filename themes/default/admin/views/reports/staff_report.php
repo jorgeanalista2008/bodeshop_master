@@ -51,64 +51,151 @@
         font-weight: bold;
     }
 </style>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="small-box padding1010 col-sm-4 bblue">
-                    <h3 class="bold"><?= isset($sales->total_amount) ? $this->sma->formatMoney($sales->total_amount) : '0.00' ?></h3>
+<?php
+$staff_user = $this->site->getUser($user_id);
+$staff_group = $staff_user ? $this->site->getUserGroup($user_id) : null;
+$staff_name = $staff_user ? trim($staff_user->first_name . ' ' . $staff_user->last_name) : 'Usuario #' . $user_id;
+$staff_initials = '';
+if ($staff_user && !empty($staff_user->first_name)) {
+    $staff_initials = strtoupper(substr($staff_user->first_name, 0, 1) . substr($staff_user->last_name ?? '', 0, 1));
+}
+if (!$staff_initials) {
+    $staff_initials = 'US';
+}
+?>
 
-                    <p class="bold"><?= $sales->total . ' ' . lang('sales') ?></p>
+<!-- ================= EXECUTIVE STAFF PROFILE HERO ================= -->
+<div class="staff-profile-card">
+    <div class="staff-profile-main">
+        <div class="staff-avatar-badge">
+            <?= htmlspecialchars($staff_initials) ?>
+            <?php if ($staff_user && $staff_user->active) { ?>
+                <span class="staff-status-dot active" title="Activo"></span>
+            <?php } else { ?>
+                <span class="staff-status-dot inactive" title="Inactivo"></span>
+            <?php } ?>
+        </div>
+        <div class="staff-details">
+            <div class="staff-name-wrap">
+                <h1 class="staff-name"><?= htmlspecialchars($staff_name) ?></h1>
+                <?php if ($staff_group) { ?>
+                    <span class="staff-group-pill"><?= htmlspecialchars($staff_group->description ?: $staff_group->name) ?></span>
+                <?php } ?>
+                <?php if ($staff_user && $staff_user->active) { ?>
+                    <span class="staff-badge-status badge-active"><i class="fa fa-check-circle"></i> Activo</span>
+                <?php } else { ?>
+                    <span class="staff-badge-status badge-inactive"><i class="fa fa-times-circle"></i> Inactivo</span>
+                <?php } ?>
+            </div>
+            <div class="staff-meta-row">
+                <?php if (!empty($staff_user->email)) { ?>
+                    <span class="staff-meta-item"><i class="fa fa-envelope text-primary"></i> <?= htmlspecialchars($staff_user->email) ?></span>
+                <?php } ?>
+                <?php if (!empty($staff_user->phone)) { ?>
+                    <span class="staff-meta-item"><i class="fa fa-phone text-success"></i> <?= htmlspecialchars($staff_user->phone) ?></span>
+                <?php } ?>
+                <?php if (!empty($staff_user->company)) { ?>
+                    <span class="staff-meta-item"><i class="fa fa-building text-warning"></i> <?= htmlspecialchars($staff_user->company) ?></span>
+                <?php } ?>
+                <span class="staff-meta-item"><i class="fa fa-id-badge text-muted"></i> ID: #<?= $user_id ?></span>
+            </div>
+        </div>
+    </div>
+    <div class="staff-profile-actions">
+        <a href="<?= admin_url('reports/users') ?>" class="btn-profile-secondary">
+            <i class="fa fa-arrow-left"></i> Volver a Personal
+        </a>
+        <a href="<?= admin_url('users/edit/' . $user_id) ?>" class="btn-profile-primary">
+            <i class="fa fa-pencil"></i> Editar Perfil
+        </a>
+    </div>
+</div>
+
+<!-- ================= EXECUTIVE KPI SUMMARY PILLARS ================= -->
+<div class="row" style="margin-bottom: 24px;">
+    <!-- COLUMNA 1: VENTAS -->
+    <div class="col-md-6" style="margin-bottom: 12px;">
+        <div class="pillar-card">
+            <div class="pillar-header">
+                <span class="pillar-badge badge-blue"><i class="fa fa-line-chart"></i> Rendimiento Comercial (Ventas)</span>
+                <span class="pillar-count"><?= $sales->total ?? 0 ?> Ventas Totales</span>
+            </div>
+            <div class="pillar-grid">
+                <div class="kpi-mini-card">
+                    <div class="kpi-mini-icon text-blue bg-blue-subtle"><i class="fa fa-shopping-bag"></i></div>
+                    <div>
+                        <div class="kpi-mini-label">Monto Total</div>
+                        <div class="kpi-mini-value"><?= isset($sales->total_amount) ? $this->sma->formatMoney($sales->total_amount) : '0.00' ?></div>
+                    </div>
                 </div>
-                <div class="small-box padding1010 col-sm-4 bdarkGreen">
-                    <h3><?= isset($sales->paid) ? $this->sma->formatMoney($sales->paid) : '0.00' ?></h3>
-
-                    <p><?= lang('total_paid') ?></p>
+                <div class="kpi-mini-card">
+                    <div class="kpi-mini-icon text-green bg-green-subtle"><i class="fa fa-check-circle"></i></div>
+                    <div>
+                        <div class="kpi-mini-label">Cobrado</div>
+                        <div class="kpi-mini-value text-success"><?= isset($sales->paid) ? $this->sma->formatMoney($sales->paid) : '0.00' ?></div>
+                    </div>
                 </div>
-                <div class="small-box padding1010 col-sm-4 borange">
-                    <h3><?= (isset($sales->total_amount) || isset($sales->paid)) ? $this->sma->formatMoney($sales->total_amount - $sales->paid) : '0.00' ?></h3>
-
-                    <p><?= lang('due_amount') ?></p>
+                <div class="kpi-mini-card">
+                    <div class="kpi-mini-icon text-amber bg-amber-subtle"><i class="fa fa-clock-o"></i></div>
+                    <div>
+                        <div class="kpi-mini-label">Pendiente</div>
+                        <div class="kpi-mini-value text-warning"><?= (isset($sales->total_amount) || isset($sales->paid)) ? $this->sma->formatMoney($sales->total_amount - $sales->paid) : '0.00' ?></div>
+                    </div>
                 </div>
             </div>
-            <div class="col-sm-6">
-                <div class="small-box padding1010 col-sm-4 bblue">
-                    <h3 class="bold"><?= isset($purchases->total_amount) ? $this->sma->formatMoney($purchases->total_amount) : '0.00' ?></h3>
+        </div>
+    </div>
 
-                    <p class="bold"><?= $purchases->total . ' ' . lang('purchases') ?></p>
+    <!-- COLUMNA 2: COMPRAS -->
+    <div class="col-md-6" style="margin-bottom: 12px;">
+        <div class="pillar-card">
+            <div class="pillar-header">
+                <span class="pillar-badge badge-indigo"><i class="fa fa-shopping-cart"></i> Gestión de Compras</span>
+                <span class="pillar-count"><?= $purchases->total ?? 0 ?> Compras Totales</span>
+            </div>
+            <div class="pillar-grid">
+                <div class="kpi-mini-card">
+                    <div class="kpi-mini-icon text-indigo bg-indigo-subtle"><i class="fa fa-truck"></i></div>
+                    <div>
+                        <div class="kpi-mini-label">Monto Total</div>
+                        <div class="kpi-mini-value"><?= isset($purchases->total_amount) ? $this->sma->formatMoney($purchases->total_amount) : '0.00' ?></div>
+                    </div>
                 </div>
-                <div class="small-box padding1010 col-sm-4 blightOrange">
-                    <h3><?= isset($purchases->paid) ? $this->sma->formatMoney($purchases->paid) : '0.00' ?></h3>
-
-                    <p><?= lang('total_paid') ?></p>
+                <div class="kpi-mini-card">
+                    <div class="kpi-mini-icon text-teal bg-teal-subtle"><i class="fa fa-credit-card"></i></div>
+                    <div>
+                        <div class="kpi-mini-label">Pagado</div>
+                        <div class="kpi-mini-value text-teal"><?= isset($purchases->paid) ? $this->sma->formatMoney($purchases->paid) : '0.00' ?></div>
+                    </div>
                 </div>
-                <div class="small-box padding1010 col-sm-4 borange">
-                    <h3><?= (isset($purchases->total_amount) || isset($purchases->paid)) ? $this->sma->formatMoney($purchases->total_amount - $purchases->paid) : '0.00' ?></h3>
-
-                    <p><?= lang('due_amount') ?></p>
+                <div class="kpi-mini-card">
+                    <div class="kpi-mini-icon text-rose bg-rose-subtle"><i class="fa fa-exclamation-circle"></i></div>
+                    <div>
+                        <div class="kpi-mini-label">Por Pagar</div>
+                        <div class="kpi-mini-value text-danger"><?= (isset($purchases->total_amount) || isset($purchases->paid)) ? $this->sma->formatMoney($purchases->total_amount - $purchases->paid) : '0.00' ?></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div style="clear:both;height:20px;"></div>
 <ul id="myTab" class="nav nav-tabs no-print">
     <?php if ($Owner || $Admin || $GP['reports-daily_sales']) { ?>
-    <li class=""><a href="#daily-con" class="tab-grey"><?= lang('staff_daily_sales') ?></a></li>
+    <li class=""><a href="#daily-con" class="tab-grey"><i class="fa fa-calendar-check-o"></i> <?= lang('staff_daily_sales') ?></a></li>
     <?php } ?>
     <?php if ($Owner || $Admin || $GP['reports-monthly_sales']) { ?>
-    <li class=""><a href="#monthly-con" class="tab-grey"><?= lang('staff_monthly_sales') ?></a></li>
+    <li class=""><a href="#monthly-con" class="tab-grey"><i class="fa fa-calendar"></i> <?= lang('staff_monthly_sales') ?></a></li>
     <?php } ?>
     <?php if ($Owner || $Admin || $GP['reports-sales']) { ?>
-    <li class=""><a href="#sales-con" class="tab-grey"><?= lang('staff_sales_report') ?></a></li>
+    <li class=""><a href="#sales-con" class="tab-grey"><i class="fa fa-line-chart"></i> <?= lang('staff_sales_report') ?></a></li>
     <?php } ?>
     <?php if ($Owner || $Admin || $GP['reports-purchases']) { ?>
-    <li class=""><a href="#purchases-con" class="tab-grey"><?= lang('staff_purchases_report') ?></a></li>
+    <li class=""><a href="#purchases-con" class="tab-grey"><i class="fa fa-shopping-cart"></i> <?= lang('staff_purchases_report') ?></a></li>
     <?php } ?>
     <?php if ($Owner || $Admin || $GP['reports-payments']) { ?>
-    <li class=""><a href="#payments-con" class="tab-grey"><?= lang('staff_payments_report') ?></a></li>
+    <li class=""><a href="#payments-con" class="tab-grey"><i class="fa fa-credit-card"></i> <?= lang('staff_payments_report') ?></a></li>
     <?php } ?>
-    <li class=""><a href="#logins-con" class="tab-grey"><?= lang('staff_logins_report') ?></a></li>
+    <li class=""><a href="#logins-con" class="tab-grey"><i class="fa fa-shield"></i> <?= lang('staff_logins_report') ?></a></li>
 </ul>
 
 <div class="tab-content">
@@ -165,16 +252,15 @@
                             <table class="table table-bordered dfTable reports-table">
                                 <tr class="year_roller">
                                     <th>
-                                        <div class="text-center"><a href="<?= admin_url('reports/staff_report/' . $user_id . '/' . ($year - 1) . '/#monthly-con'); ?>">&lt;&lt;</a>
+                                        <div class="text-center"><a href="<?= admin_url('reports/staff_report/' . $user_id . '/' . ($year - 1) . '/#monthly-con'); ?>" class="btn-roller">&laquo; <?= ($year - 1); ?></a>
                                         </div>
                                     </th>
                                     <th colspan="10">
-                                        <div class="text-center"> <?= $year; ?> </div>
-                                    </td>
-                                    <th>
-                                        <div class="text-center"><a href="<?= admin_url('reports/staff_report/' . $user_id . '/' . ($year + 1) . '/#monthly-con'); ?>">&gt;&gt;</a>
-                                        </div>
+                                        <div class="text-center roller-year-badge"> <i class="fa fa-calendar-o text-primary"></i> <?= $year; ?> </div>
                                     </th>
+                                    <th>
+                                        <div class="text-center"><a href="<?= admin_url('reports/staff_report/' . $user_id . '/' . ($year + 1) . '/#monthly-con'); ?>" class="btn-roller"><?= ($year + 1); ?> &raquo;</a>
+                                        </div>
                                     </th>
                                 </tr>
                                 <tr>
@@ -343,7 +429,7 @@
 
                         <p class="introtext"><?= lang('customize_report'); ?></p>
 
-                        <div id="form">
+                        <div id="form" class="filter-panel" style="display:none; margin-bottom: 20px;">
 
                             <?= admin_form_open('reports/staff_report/' . $user_id . '#sales-con'); ?>
                             <div class="row">
@@ -570,7 +656,7 @@
 
                         <p class="introtext"><?= lang('customize_report'); ?></p>
 
-                        <div id="pform">
+                        <div id="pform" class="filter-panel" style="display:none; margin-bottom: 20px;">
 
                             <?= admin_form_open('reports/staff_report/' . $user_id . '#purchases-con'); ?>
                             <div class="row">
@@ -789,7 +875,7 @@
 
                         <p class="introtext"><?= lang('customize_report'); ?></p>
 
-                        <div id="payform">
+                        <div id="payform" class="filter-panel" style="display:none; margin-bottom: 20px;">
 
                             <?= admin_form_open('reports/staff_report/' . $user_id . '#payments-con'); ?>
                             <div class="row">
@@ -904,7 +990,7 @@
 
                         <p class="introtext"><?= lang('staff_logins_report') ?></p>
 
-                        <div id="loginform">
+                        <div id="loginform" class="filter-panel" style="display:none; margin-bottom: 20px;">
 
                             <?= admin_form_open('reports/staff_report/' . $user_id . '#logins-con'); ?>
                             <div class="row">

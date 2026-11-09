@@ -43,7 +43,24 @@
         <div class="row">
             <div class="col-lg-12">
 
-                <p class="introtext"><?= lang('list_results'); ?></p>
+                
+                <!-- MODERN ACTION HEADER -->
+                <div class="modern-table-header">
+                    <div>
+                        <div class="modern-table-header-title">
+                            <i class="fa fa-gift text-primary"></i> <?= lang('promos') ?>
+                        </div>
+                        <div class="modern-table-header-desc">
+                            Promociones automáticas (Compre X y Lleve Y gratis)
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="<?= admin_url('promos/add'); ?>"  class="btn btn-primary" style="border-radius: 6px; font-weight: 700; padding: 8px 16px;">
+                            <i class="fa fa-plus-circle" style="margin-right: 5px;"></i> <?= lang('add_promo') ?>
+                        </a>
+                    </div>
+                </div>
+
 
                 <div class="table-responsive">
                     <table id="SupData" cellpadding="0" cellspacing="0" border="0"

@@ -586,7 +586,7 @@ class Products extends MY_Controller
 
     public function addByAjax()
     {
-        if (!$this->mPermissions('add')) {
+        if (!$this->sma->actionPermissions('add', 'products')) {
             exit(json_encode(['msg' => lang('access_denied')]));
         }
         if ($this->input->get('token') && $this->input->get('token') == $this->session->userdata('user_csrf') && $this->input->is_ajax_request()) {
@@ -1630,27 +1630,45 @@ class Products extends MY_Controller
                     }
                     fclose($handle);
                 }
-                $titles  = array_shift($arrResult);
-                $updated = 0;
-                $items   = [];
+                $titles      = array_shift($arrResult);
+                $updated     = 0;
+                $items       = [];
+                $csv_errors  = [];
+                $skip_errors = (bool)$this->input->post('skip_errors');
+
                 foreach ($arrResult as $key => $value) {
+                    $line_no = $key + 2; // Line in original file with header as line 1
+                    $name    = isset($value[0]) ? trim($value[0]) : '';
+                    $code    = isset($value[1]) ? trim($value[1]) : '';
+                    $cat_code = isset($value[4]) ? trim($value[4]) : '';
+                    $unit_code = isset($value[5]) ? trim($value[5]) : '';
+                    $cost    = isset($value[8]) ? trim($value[8]) : '';
+                    $price   = isset($value[9]) ? trim($value[9]) : '';
+
+                    if (empty($name) || empty($code)) {
+                        $csv_errors[] = sprintf(lang('line_no'), $line_no) . ': ' . lang('name') . ' / ' . lang('code') . ' ' . lang('is_required');
+                        if (!$skip_errors) {
+                            continue;
+                        }
+                    }
+
                     $supplier_name = isset($value[24]) ? trim($value[24]) : '';
                     $supplier      = $supplier_name ? $this->products_model->getSupplierByName($supplier_name) : false;
 
                     $item = [
-                        'name'              => isset($value[0]) ? trim($value[0]) : '',
-                        'code'              => isset($value[1]) ? trim($value[1]) : '',
-                        'barcode_symbology' => isset($value[2]) ? mb_strtolower(trim($value[2]), 'UTF-8') : '',
+                        'name'              => $name,
+                        'code'              => $code,
+                        'barcode_symbology' => isset($value[2]) ? mb_strtolower(trim($value[2]), 'UTF-8') : 'code128',
                         'brand'             => isset($value[3]) ? trim($value[3]) : '',
-                        'category_code'     => isset($value[4]) ? trim($value[4]) : '',
-                        'unit'              => isset($value[5]) ? trim($value[5]) : '',
+                        'category_code'     => $cat_code,
+                        'unit'              => $unit_code,
                         'sale_unit'         => isset($value[6]) ? trim($value[6]) : '',
                         'purchase_unit'     => isset($value[7]) ? trim($value[7]) : '',
-                        'cost'              => isset($value[8]) ? trim($value[8]) : '',
-                        'price'             => isset($value[9]) ? trim($value[9]) : '',
-                        'alert_quantity'    => isset($value[10]) ? trim($value[10]) : '',
+                        'cost'              => $cost,
+                        'price'             => $price,
+                        'alert_quantity'    => isset($value[10]) ? trim($value[10]) : '0',
                         'tax_rate'          => isset($value[11]) ? trim($value[11]) : '',
-                        'tax_method'        => isset($value[12]) ? (trim($value[12]) == 'exclusive' ? 1 : 0) : '',
+                        'tax_method'        => isset($value[12]) ? (trim($value[12]) == 'exclusive' ? 1 : 0) : 0,
                         'image'             => isset($value[13]) ? trim($value[13]) : '',
                         'subcategory_code'  => isset($value[14]) ? trim($value[14]) : '',
                         'variants'          => isset($value[15]) ? trim($value[15]) : '',
@@ -1665,7 +1683,7 @@ class Products extends MY_Controller
                         'supplier1'         => $supplier ? $supplier->id : null,
                         'supplier1_part_no' => isset($value[25]) ? trim($value[25]) : '',
                         'supplier1price'    => isset($value[26]) ? trim($value[26]) : '',
-                        'slug'              => $this->sma->slug($value[0]),
+                        'slug'              => $this->sma->slug($name),
                     ];
 
                     if ($catd = $this->products_model->getCategoryByCode($item['category_code'])) {
@@ -1687,8 +1705,10 @@ class Products extends MY_Controller
                                 }
                             }
                         } else {
-                            $this->session->set_flashdata('error', lang('check_unit') . ' (' . $item['unit'] . '). ' . lang('unit_code_x_exist') . ' ' . lang('line_no') . ' ' . ($key + 1));
-                            admin_redirect('products/import_csv');
+                            $csv_errors[] = lang('line_no') . ' ' . $line_no . ': ' . lang('check_unit') . ' (' . $item['unit'] . '). ' . lang('unit_code_x_exist');
+                            if (!$skip_errors) {
+                                continue;
+                            }
                         }
 
                         unset($item['category_code'], $item['subcategory_code']);
@@ -1718,33 +1738,57 @@ class Products extends MY_Controller
                             $item = false;
                         }
                     } else {
-                        $this->session->set_flashdata('error', lang('check_category_code') . ' (' . $item['category_code'] . '). ' . lang('category_code_x_exist') . ' ' . lang('line_no') . ' ' . ($key + 1));
-                        admin_redirect('products/import_csv');
+                        $csv_errors[] = lang('line_no') . ' ' . $line_no . ': ' . lang('check_category_code') . ' (' . $item['category_code'] . '). ' . lang('category_code_x_exist');
+                        if (!$skip_errors) {
+                            continue;
+                        }
                     }
 
-                    if ($item) {
+                    if ($item && $catd && $base_unit) {
                         $items[] = $item;
                     }
+                }
+
+                if (!empty($csv_errors) && !$skip_errors) {
+                    $err_msg = '<p><strong>' . count($csv_errors) . ' errores encontrados en el archivo CSV:</strong></p><ul>';
+                    $shown = array_slice($csv_errors, 0, 8);
+                    foreach ($shown as $err) {
+                        $err_msg .= '<li>' . $err . '</li>';
+                    }
+                    if (count($csv_errors) > 8) {
+                        $err_msg .= '<li>... y ' . (count($csv_errors) - 8) . ' errores más.</li>';
+                    }
+                    $err_msg .= '</ul><p>Corrige los datos o selecciona "Omitir filas con errores" para importar los válidos.</p>';
+                    $this->session->set_flashdata('error', $err_msg);
+                    admin_redirect('products/import_csv');
                 }
             }
 
             // $this->sma->print_arrays($items);
         }
 
-        if ($this->form_validation->run() == true && !empty($items)) {
-            if ($this->products_model->add_products($items)) {
-                $updated = $updated ? '<p>' . sprintf(lang('products_updated'), $updated) . '</p>' : '';
-                $this->session->set_flashdata('message', sprintf(lang('products_added'), count($items)) . $updated);
-                admin_redirect('products');
-            }
-        } else {
-            if (isset($items) && empty($items)) {
-                if ($updated) {
-                    $this->session->set_flashdata('message', sprintf(lang('products_updated'), $updated));
-                    admin_redirect('products');
-                } else {
-                    $this->session->set_flashdata('warning', lang('csv_issue'));
+        if ($this->form_validation->run() == true && (!empty($items) || $updated > 0)) {
+            $imported_count = 0;
+            if (!empty($items)) {
+                if ($this->products_model->add_products($items)) {
+                    $imported_count = count($items);
                 }
+            }
+            $msg = '';
+            if ($imported_count > 0) {
+                $msg .= sprintf(lang('products_added'), $imported_count) . '. ';
+            }
+            if ($updated > 0) {
+                $msg .= sprintf(lang('products_updated'), $updated) . '. ';
+            }
+            if (!empty($csv_errors) && $skip_errors) {
+                $msg .= ' Se omitieron ' . count($csv_errors) . ' filas con errores.';
+            }
+            $this->session->set_flashdata('message', $msg);
+            admin_redirect('products');
+        } else {
+            if (isset($items) && empty($items) && $updated == 0) {
+                $this->session->set_flashdata('warning', lang('csv_issue'));
                 admin_redirect('products/import_csv');
             }
 
@@ -1754,6 +1798,14 @@ class Products extends MY_Controller
                 'type'                        => 'text',
                 'value'                       => $this->form_validation->set_value('userfile'),
             ];
+
+            // Provide categories, units, brands, tax rates and codes for live frontend validation
+            $this->data['categories']     = $this->db->select('id, code, name, parent_id')->get('categories')->result();
+            $this->data['units']          = $this->db->select('id, code, name, base_unit')->get('units')->result();
+            $this->data['brands']         = $this->db->select('id, code, name')->get('brands')->result();
+            $this->data['tax_rates']      = $this->db->select('id, name, code, rate')->get('tax_rates')->result();
+            $codes_q                      = $this->db->select('code')->get('products')->result();
+            $this->data['existing_codes'] = array_column($codes_q, 'code');
 
             $bc   = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('products'), 'page' => lang('products')], ['link' => '#', 'page' => lang('import_products_by_csv')]];
             $meta = ['page_title' => lang('import_products_by_csv'), 'bc' => $bc];

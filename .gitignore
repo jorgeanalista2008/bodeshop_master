@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+dist/
+.next/
+out/
+build/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Sensitive Database backups and SQL dumps
+*.sql
+*.sql.gz
+servicio/data/backup.sql
+servicio/admin/storage/
+servicio/old/admin/storage/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+app/logs/*.php
+
+# OS & IDE Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
