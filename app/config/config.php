@@ -18,7 +18,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | environments.
 |
 */
-$config['base_url'] = 'https://guslaya.com/';
+if (isset($_SERVER['HTTP_HOST']) && (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false)) {
+    $config['base_url'] = 'http://localhost:8081/wwww/cristaleria/';
+} else {
+    $config['base_url'] = 'https://moccasin-rail-474721.hostingersite.com/';
+}
 
 /*
 |--------------------------------------------------------------------------

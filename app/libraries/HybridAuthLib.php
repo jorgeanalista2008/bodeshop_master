@@ -11,7 +11,9 @@ class HybridAuthLib extends Hybrid_Auth
     public function __construct($config = [])
     {
         $ci                 = &get_instance();
-        $config['base_url'] = base_url((config_item('index_page') ? config_item('index_page') : 'index.php/') . $config['Hauth_base_url']);
+        $index_page         = config_item('index_page');
+        $prefix             = !empty($index_page) ? rtrim($index_page, '/') . '/' : '';
+        $config['base_url'] = base_url($prefix . $config['Hauth_base_url']);
         parent::__construct($config);
     }
 

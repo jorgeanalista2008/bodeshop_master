@@ -27,7 +27,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="<?= $assets; ?>css/libs.min.css" rel="stylesheet">
     <link href="<?= $assets; ?>css/styles.min.css" rel="stylesheet">
-    <link href="<?= base_url('assets/custom/shop.css?v=3.1') ?>" rel="stylesheet"/>
+    <link href="<?= base_url('assets/custom/shop.css?v=3.2') ?>" rel="stylesheet"/>
     <meta property="og:url" content="<?= isset($product) && !empty($product) ? site_url('product/' . $product->slug) : site_url(); ?>" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="<?= $page_title; ?>" />

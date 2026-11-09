@@ -6,17 +6,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /* ------------------------------------------------------------------------- */
 
 $config = [
-    // For godady Shared Hosting Server uncomment the line below
-    // Please update the callback url too
     'Hauth_base_url' => 'social_auth/endpoint',
-
-    // Please comment this if you have uncommented the above
-    // 'Hauth_base_url' => 'social_auth/endpoint',
 
     'providers' => [
         'Google' => [
-            'enabled' => false,
-            'keys'    => ['id' => '', 'secret' => ''],
+            'enabled' => true,
+            'keys'    => [
+                'id'     => '23738208734-beqjdo1l7i7if72mmjs65lrl7hu4qtib.apps.googleusercontent.com',
+                'secret' => getenv('GOOGLE_CLIENT_SECRET') ?: 'PEGA_AQUI_TU_CLIENT_SECRET',
+            ],
+            'scope'   => 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid',
         ],
 
         'Facebook' => [

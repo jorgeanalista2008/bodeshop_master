@@ -41,22 +41,41 @@ class Social_auth extends MY_Shop_Controller
                             $this->session->set_flashdata('error', lang('login_unsuccessful_not_active'));
                             redirect('login');
                         }
+
+                        // Actualizar información OAuth si no existía
+                        $update_data = [
+                            'oauth_provider' => $provider,
+                            'oauth_uid'      => $user_profile->identifier,
+                        ];
+                        if (!empty($user_profile->photoURL)) {
+                            $update_data['oauth_avatar'] = $user_profile->photoURL;
+                        }
+                        $this->db->update('users', $update_data, ['id' => $user->id]);
+
                         $this->session->set_flashdata('message', lang('login_successful'));
                         $this->auth_model->update_last_login($user->id);
                         $this->auth_model->update_last_login_ip($user->id);
                         $this->auth_model->set_session($user);
+
+                        $referrer = $this->session->userdata('requested_page') ? $this->session->userdata('requested_page') : '/';
+                        redirect($referrer);
                     } else {
                         $this->load->helper('string');
 
                         $email    = $username    = $user_profile->email;
-                        $password = random_string('alnum', 8);
+                        $password = random_string('alnum', 16);
 
                         $customer_group = $this->shop_model->getCustomerGroup($this->Settings->customer_group);
                         $price_group    = $this->shop_model->getPriceGroup($this->Settings->price_group);
 
+                        $name = trim($user_profile->firstName . ' ' . $user_profile->lastName);
+                        if (empty($name)) {
+                            $name = $user_profile->displayName ?: $user_profile->email;
+                        }
+
                         $company_data = [
                             'company'             => '-',
-                            'name'                => $user_profile->firstName . ' ' . $user_profile->lastName,
+                            'name'                => $name,
                             'email'               => $user_profile->email,
                             'group_id'            => 3,
                             'group_name'          => 'customer',
@@ -69,11 +88,14 @@ class Social_auth extends MY_Shop_Controller
                         $company_id = $this->shop_model->addCustomer($company_data);
 
                         $additional_data = [
-                            'first_name' => $user_profile->firstName,
-                            'last_name'  => $user_profile->lastName,
-                            'gender'     => $user_profile->gender,
-                            'company_id' => $company_id,
-                            'group_id'   => 3,
+                            'first_name'     => $user_profile->firstName ?: ($user_profile->displayName ?: 'Usuario'),
+                            'last_name'      => $user_profile->lastName ?: '',
+                            'gender'         => $user_profile->gender ?: 'male',
+                            'company_id'     => $company_id,
+                            'group_id'       => 3,
+                            'oauth_provider' => $provider,
+                            'oauth_uid'      => $user_profile->identifier,
+                            'oauth_avatar'   => $user_profile->photoURL,
                         ];
 
                         if ($this->ion_auth->register($username, $password, $email, $additional_data, true, true)) {
@@ -85,7 +107,7 @@ class Social_auth extends MY_Shop_Controller
                                     }
                                 }
 
-                                $this->session->set_flashdata('message', $this->ion_auth->messages());
+                                $this->session->set_flashdata('message', '¡Bienvenido! Tu cuenta ha sido creada exitosamente.');
                                 $referrer = $this->session->userdata('requested_page') ? $this->session->userdata('requested_page') : '/';
                                 redirect($referrer);
                             } else {
@@ -98,9 +120,6 @@ class Social_auth extends MY_Shop_Controller
                         }
                     }
 
-                    // $this->sma->print_arrays($additional_data);
-                    // $this->sma->print_arrays($user_profile);
-                    // $this->session->set_flashdata('message', $this->ion_auth->messages());
                     redirect('/');
                 } else {
                     $this->session->set_flashdata('error', lang('cant_authenticate_user'));

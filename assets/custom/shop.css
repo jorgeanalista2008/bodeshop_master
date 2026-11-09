@@ -1665,6 +1665,43 @@ input.quantity-input {
     color: var(--primary) !important;
 }
 
+/* Modern Google OAuth Button */
+.btn-oauth-google {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding: 10px 16px !important;
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: var(--radius-md) !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    font-family: inherit !important;
+    text-decoration: none !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+}
+
+.btn-oauth-google:hover,
+.btn-oauth-google:focus {
+    background: #f8fafc !important;
+    border-color: #94a3b8 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-1px) !important;
+    color: #0f172a !important;
+    text-decoration: none !important;
+}
+
+.btn-oauth-google .google-icon {
+    width: 19px !important;
+    height: 19px !important;
+    flex-shrink: 0 !important;
+}
+
 /* Standalone Auth Page */
 .shop-auth-page {
     background-color: var(--bg-page) !important;
@@ -4072,4 +4109,67 @@ html.theme-dark .mobile-nav-item {
 
 html.theme-dark .mobile-nav-item.active {
     color: #38bdf8 !important;
+}
+
+/* Google OAuth Button in Dark Mode */
+html.theme-dark .btn-oauth-google {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.theme-dark .btn-oauth-google:hover,
+html.theme-dark .btn-oauth-google:focus {
+    background: #27364f !important;
+    border-color: #475569 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.theme-dark .shop-social-divider::before {
+    background: #1e293b !important;
+}
+
+html.theme-dark .shop-social-divider span {
+    background: #131b2e !important;
+    color: #94a3b8 !important;
+}
+
+html.theme-dark .shop-auth-box {
+    background: #121826 !important;
+    border-color: #1f2c42 !important;
+}
+
+html.theme-dark .shop-auth-tabs {
+    background: #0f1523 !important;
+    border-bottom-color: #1f2c42 !important;
+}
+
+html.theme-dark .shop-auth-tabs > li > a {
+    color: #94a3b8 !important;
+    background: transparent !important;
+}
+
+html.theme-dark .shop-auth-tabs > li.active > a {
+    color: #38bdf8 !important;
+    background: #121826 !important;
+    border-color: #1f2c42 #1f2c42 transparent !important;
+}
+
+html.theme-dark .shop-auth-info-card {
+    background: #0f1523 !important;
+    border-color: #1f2c42 !important;
+}
+
+html.theme-dark .shop-auth-info-title {
+    color: #f8fafc !important;
+}
+
+html.theme-dark .shop-auth-info-desc {
+    color: #94a3b8 !important;
+}
+
+html.theme-dark .shop-auth-benefits li {
+    color: #cbd5e1 !important;
 }
